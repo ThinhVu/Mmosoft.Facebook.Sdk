@@ -131,5 +131,46 @@
                 }
             }                        
         }
+
+        // Tested-worked
+        // Does not support attachment
+        public void PostWall(string message)
+        {
+            // /html/body/div/div/div[2]/div/div[2]/div/form
+            var html = string.Empty;
+
+            using (var response = HttpRequestBuilder.RequestGet("https://m.facebook.com/", cookies).GetResponse())
+            using (var responseStream = response.GetResponseStream())
+            using (var gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
+            using (var responseStreamReader = new StreamReader(gzipStream))
+            {
+                // store html content
+                html = responseStreamReader.ReadToEnd();
+            }
+            // load html content to DOM
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(html);
+
+            HtmlNode postForm = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[2]/div");
+            var innerHtml = postForm.InnerHtml.Replace("\"", "\'").Replace(@"\r\n|\t|\v|\s+", @"\s");
+            var inputCollection = new List<string>();
+            foreach (Match match in Regex.Matches(innerHtml, "<input type='hidden' name='(?<name>.*?)' value='(?<value>.*?)'.*?>"))
+            {
+                var name = match.Groups["name"].Value;
+                var value = match.Groups["value"].Value;
+                //if (name == "charset_test")
+                //    value = WebUtility.UrlEncode(WebUtility.HtmlDecode(value));
+                inputCollection.Add(name + "=" + value);
+            }
+            inputCollection.Add("rst_icv=");
+            inputCollection.Add("view_post=Post");
+            inputCollection.Add("xc_message=" + message);
+            var actionUrl = "https://m.facebook.com" + postForm.SelectSingleNode("form").Attributes["action"].Value;
+            var data = string.Join("&", inputCollection);
+            using (var response2 = HttpRequestBuilder.PostData(actionUrl, data, cookies))
+            {
+                cookies.Add(response2.Cookies);
+            }
+        }
     }
 }

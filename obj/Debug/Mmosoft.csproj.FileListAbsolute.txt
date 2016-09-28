@@ -1,0 +1,6 @@
+D:\kod\facebookApi\bin\Debug\Mmosoft.exe
+D:\kod\facebookApi\bin\Debug\Mmosoft.pdb
+D:\kod\facebookApi\bin\Debug\HtmlAgilityPack.dll
+D:\kod\facebookApi\obj\Debug\Mmosoft.csprojResolveAssemblyReference.cache
+D:\kod\facebookApi\obj\Debug\Mmosoft.exe
+D:\kod\facebookApi\obj\Debug\Mmosoft.pdb
