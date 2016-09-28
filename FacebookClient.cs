@@ -172,5 +172,41 @@
                 cookies.Add(response2.Cookies);
             }
         }
+
+        // Tested - ok
+        // You can modify this method to post multiple messages.
+        public void PostGroup(string groupId, string message)
+        {            
+            var html = string.Empty;
+
+            using (var response = HttpRequestBuilder.RequestGet("https://m.facebook.com/groups/" + groupId, cookies).GetResponse())
+            using (var responseStream = response.GetResponseStream())
+            using (var gzipStream = new GZipStream(responseStream, CompressionMode.Decompress))
+            using (var responseStreamReader = new StreamReader(gzipStream))
+            {
+                // store html content
+                html = responseStreamReader.ReadToEnd();
+            }
+            // load html content to DOM
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(html);            
+            HtmlNode postForm = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[1]/div[3]");
+            var innerHtml = postForm.InnerHtml.Replace("\"", "\'").Replace(@"\r\n|\t|\v|\s+", @"\s");
+            var inputCollection = new List<string>();
+            foreach (Match match in Regex.Matches(innerHtml, "<input type='hidden' name='(?<name>.*?)' value='(?<value>.*?)'.*?>"))
+            {
+                var name = match.Groups["name"].Value;
+                var value = match.Groups["value"].Value;
+                inputCollection.Add(name + "=" + value);
+            }
+            inputCollection.Add("view_post=Post");
+            inputCollection.Add("xc_message=" + message);
+            var actionUrl = "https://m.facebook.com" + postForm.SelectSingleNode("form").Attributes["action"].Value;
+            var data = string.Join("&", inputCollection);
+            using (var response2 = HttpRequestBuilder.PostData(actionUrl, data, cookies))
+            {
+                cookies.Add(response2.Cookies);
+            }
+        }
     }
 }

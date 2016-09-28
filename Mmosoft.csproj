@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs" />
     <Compile Include="FacebookClient.cs" />
     <Compile Include="HttpRequestBuilder.cs" />
     <Compile Include="Program.cs" />
