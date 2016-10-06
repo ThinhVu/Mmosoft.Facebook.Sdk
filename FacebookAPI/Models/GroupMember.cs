@@ -1,4 +1,4 @@
-﻿namespace Mmosoft.Models
+﻿namespace FacebookAPI.Models
 {
     public class GroupMember
     {

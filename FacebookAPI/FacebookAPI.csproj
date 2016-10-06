@@ -5,10 +5,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{247BFE1D-3016-4A3F-8891-704540C903FC}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mmosoft</RootNamespace>
-    <AssemblyName>Mmosoft</AssemblyName>
+    <RootNamespace>FacebookAPI</RootNamespace>
+    <AssemblyName>FacebookAPI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,11 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Mmosoft.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack">
-      <HintPath>..\csharp library\HtmlAgilityPack.dll</HintPath>
+      <HintPath>..\..\csharp library\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,10 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\GroupMember.cs" />
-    <Compile Include="YourAccount.cs" />
     <Compile Include="FacebookClient.cs" />
     <Compile Include="HttpRequester.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

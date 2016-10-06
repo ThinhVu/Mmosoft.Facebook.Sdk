@@ -1,4 +1,4 @@
-﻿namespace Mmosoft
+﻿namespace FacebookAPI
 {
     using System;
     using System.Collections.Generic;
@@ -9,13 +9,13 @@
 
     using HtmlAgilityPack;
 
-    public class FClient
+    public class FacebookClient
     {
         private string email;
         private string password;
         private CookieContainer cookies;
 
-        public FClient(string email, string password)
+        public FacebookClient(string email, string password)
         {
             // Init data
             this.email = email;
@@ -25,7 +25,7 @@
             // Login -- bootstrap cookie
             this.Login();
         }
-        
+
         public void JoinGroupOrCancel(string groupId)
         {
             var htmlNode = LoadDOM("https://m.facebook.com/groups/" + groupId, ref cookies);
@@ -39,7 +39,7 @@
                     var name = input.GetAttributeValue("name", string.Empty);
                     var value = input.GetAttributeValue("value", string.Empty);
                     inputCollection.Add(name + "=" + value);
-                }                
+                }
             }
 
             var content = string.Join("&", inputCollection);
@@ -72,18 +72,18 @@
                 }
             }
         }
-        
+
         // Tested-worked : Does not support attachment        
         public void PostToWall(string message)
         {
-            PostHelper(message);      
+            PostHelper(message);
         }
 
         // Tested - ok : You can modify this method to post multiple messages.
         public void PostToGroup(string message, string groupId)
         {
             PostHelper(message, groupId);
-        }        
+        }
 
         // Get friend ids
         public List<string> GetFriends(string userId = "")
@@ -96,9 +96,9 @@
             // XPath for other people
             // 1. Current page friends :    /html/body/div/div/div[2]/div/div[1]/div[1]
             // 2. Next page url :           /html/body/div/div/div[2]/div/div[1]/div[2]
-            if (userId == email || userId == "")            
-                return GetFriendHelper("/" + email + "/friends?startindex=1", 2);            
-            else 
+            if (userId == email || userId == "")
+                return GetFriendHelper("/" + email + "/friends?startindex=1", 2);
+            else
                 return GetFriendHelper("/" + userId + "/friends?startindex=1", 1);
         }
 
@@ -107,6 +107,9 @@
         {
             var htmlNode = LoadDOM("https://m.facebook.com/browse/group/members/?id=" + groupId + "&start=" + page + "&listType=list_nonfriend", ref cookies);
             var parentNode = htmlNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[1]/div");
+
+            if (parentNode == null) throw new NullReferenceException("Parent node does not exist");
+
             var dataNodes = parentNode.SelectNodes("table");
 
             // Create collection
@@ -120,21 +123,17 @@
             {
                 var id = Regex.Match(dataNode.Attributes["id"].Value, @"\d+").Value;
                 var isAdminNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[2]").InnerHtml;
-                var isAdmin = isAdminNode.Contains("Is Administrator") || isAdminNode.Contains("Quản trị viên"); // For Vietnamese
-                var nameNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[1]/a");
-                if (nameNode == null)
-                    nameNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[1]");                
-                var name = nameNode == null? "" : nameNode.InnerText;
+                var isAdmin = isAdminNode.Contains("Admin") ||   // For English
+                    isAdminNode.Contains("Quản trị viên");       // For Vietnamese
+                var nameNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[1]/a") ?? dataNode.SelectSingleNode("tr/td[2]/div/h3[1]");
+                var name = nameNode == null ? "" : nameNode.InnerText;
 
-                var groupMember = new Models.GroupMember
-                {
-                    UserId = id,
-                    IsAdmin = isAdmin,
-                    DisplayName = name
-                };
-
-                Console.WriteLine(" > User id : " + groupMember.UserId + " ~ Display name :" + groupMember.DisplayName + " ~ Is Admin : " + groupMember.IsAdmin);
-                groupMembers.Add(groupMember);
+                groupMembers.Add(new Models.GroupMember
+                                    {
+                                        UserId = id,
+                                        IsAdmin = isAdmin,
+                                        DisplayName = name
+                                    });
             }
 
             // next page
@@ -239,7 +238,7 @@
                 }
             }
 
-            var divNext = htmlNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[1]/div[" + (type + 1) +"]/a");
+            var divNext = htmlNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[1]/div[" + (type + 1) + "]/a");
             if (divNext != null)
             {
                 var nextUrl = divNext.GetAttributeValue("href", string.Empty);
@@ -248,7 +247,7 @@
 
             return friends;
         }
-       
+
         // Load DOM helper method
         private static HtmlNode LoadDOM(string url, ref CookieContainer cookieContainer)
         {

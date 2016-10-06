@@ -1,20 +1,21 @@
-﻿namespace Mmosoft
-{
-    using System;
-    using System.Text;
+﻿using System;
+using System.Text;
+using System.Linq;
+using FacebookAPI;
 
-    public class Program
+namespace Test
+{
+    class Program
     {
-        static FClient fc = new FClient(YourAccount.UserId, YourAccount.Password);
+        public static string UserId = "";
+        public static string Password = "";
+        public static FacebookClient fc = new FacebookClient(UserId, Password);
 
         public static void Main()
-        {            
+        {
             SetUpEnvironment();
-
-
-            PostToWallTest();
+            
             GetGroupMembersTest();
-
 
             Console.WriteLine(" -- Done-- ");
             Console.ReadLine();
@@ -22,7 +23,7 @@
 
         public static void SetUpEnvironment()
         {
-            Console.OutputEncoding = Encoding.UTF8;            
+            Console.OutputEncoding = Encoding.UTF8;
         }
 
         public static void JoinGroupTest()
@@ -40,17 +41,17 @@
         public static void PostToWallTest()
         {
             // Post to wall
-            fc.PostToWall("Testing retrieve group members info");
+            fc.PostToWall(DateTime.Now.ToString() + " - Testing retrieve group members info ");
         }
 
         public static void PostToGroupTest()
         {
             // Post to group
-            fc.PostToGroup(groupId : "1580910895550572", message : "Send from API - 093146");
+            fc.PostToGroup(groupId: "1580910895550572", message: "Send from API - 093146");
         }
 
         public static void GetFriendTest()
-        {                        
+        {
             // Note that this method does not work if you using your userId
             // Get friends of someone
             var friendIds = fc.GetFriends();
@@ -64,10 +65,13 @@
 
         public static void GetGroupMembersTest()
         {
-            // C# developer
-            var gms = fc.GetGroupMembers(groupId : "529073513939720");
-            Console.WriteLine();           
+            var gms = fc.GetGroupMembers(groupId: "127914800679263");
+            var admins = gms.Where(gm => gm.IsAdmin).Select(gm => gm);
+            foreach (var item in admins)
+            {
+                Console.WriteLine(item.DisplayName);
+            }
+            Console.WriteLine();
         }
-
     }
 }

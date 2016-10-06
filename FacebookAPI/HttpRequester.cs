@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text;
 
-namespace Mmosoft
+namespace FacebookAPI
 {
     public class HttpRequester
     {
