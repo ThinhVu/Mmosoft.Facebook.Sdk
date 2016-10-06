@@ -76,13 +76,13 @@
         // Tested-worked : Does not support attachment        
         public void PostToWall(string message)
         {
-            Post(message);      
+            PostHelper(message);      
         }
 
         // Tested - ok : You can modify this method to post multiple messages.
         public void PostToGroup(string message, string groupId)
         {
-            Post(message, groupId);
+            PostHelper(message, groupId);
         }        
 
         // Get friend ids
@@ -100,6 +100,47 @@
                 return GetFriendHelper("/" + email + "/friends?startindex=1", 2);            
             else 
                 return GetFriendHelper("/" + userId + "/friends?startindex=1", 1);
+        }
+
+        // Get members info of group
+        public List<Models.GroupMember> GetGroupMembers(string groupId = "", int page = 0)
+        {
+            var htmlNode = LoadDOM("https://m.facebook.com/browse/group/members/?id=" + groupId + "&start=" + page + "&listType=list_nonfriend", ref cookies);
+            var parentNode = htmlNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[1]/div");
+            var dataNodes = parentNode.SelectNodes("table");
+
+            // Create collection
+            var groupMembers = new List<Models.GroupMember>();
+
+            // Check if datanode exist
+            if (dataNodes == null || dataNodes.Count == 0) return groupMembers;
+
+            // loop through data node and add member
+            foreach (var dataNode in dataNodes)
+            {
+                var id = Regex.Match(dataNode.Attributes["id"].Value, @"\d+").Value;
+                var isAdminNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[2]").InnerHtml;
+                var isAdmin = isAdminNode.Contains("Is Administrator") || isAdminNode.Contains("Quản trị viên"); // For Vietnamese
+                var nameNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[1]/a");
+                if (nameNode == null)
+                    nameNode = dataNode.SelectSingleNode("tr/td[2]/div/h3[1]");                
+                var name = nameNode == null? "" : nameNode.InnerText;
+
+                var groupMember = new Models.GroupMember
+                {
+                    UserId = id,
+                    IsAdmin = isAdmin,
+                    DisplayName = name
+                };
+
+                Console.WriteLine(" > User id : " + groupMember.UserId + " ~ Display name :" + groupMember.DisplayName + " ~ Is Admin : " + groupMember.IsAdmin);
+                groupMembers.Add(groupMember);
+            }
+
+            // next page
+            groupMembers.AddRange(GetGroupMembers(groupId, page + 30));
+
+            return groupMembers;
         }
 
         // ===================================================
@@ -130,7 +171,7 @@
         }
 
         // post helper method : note that, targetId empty then post wall else post group        
-        private void Post(string message, string targetId = "")
+        private void PostHelper(string message, string targetId = "")
         {
             var loadDOMUrl = string.Empty;
             var formNodeXPath = string.Empty;
@@ -207,7 +248,7 @@
 
             return friends;
         }
-
+       
         // Load DOM helper method
         private static HtmlNode LoadDOM(string url, ref CookieContainer cookieContainer)
         {

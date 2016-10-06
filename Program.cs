@@ -1,6 +1,7 @@
 ﻿namespace Mmosoft
 {
     using System;
+    using System.Text;
 
     public class Program
     {
@@ -8,10 +9,20 @@
 
         public static void Main()
         {            
-            GetFriendTest();
-            Console.WriteLine(" -- Done-- ");
+            SetUpEnvironment();
 
+
+            PostToWallTest();
+            GetGroupMembersTest();
+
+
+            Console.WriteLine(" -- Done-- ");
             Console.ReadLine();
+        }
+
+        public static void SetUpEnvironment()
+        {
+            Console.OutputEncoding = Encoding.UTF8;            
         }
 
         public static void JoinGroupTest()
@@ -29,7 +40,7 @@
         public static void PostToWallTest()
         {
             // Post to wall
-            fc.PostToWall("Hello from api - Other demo");
+            fc.PostToWall("Testing retrieve group members info");
         }
 
         public static void PostToGroupTest()
@@ -50,5 +61,13 @@
 
             Console.WriteLine(friendIds.Count);
         }
+
+        public static void GetGroupMembersTest()
+        {
+            // C# developer
+            var gms = fc.GetGroupMembers(groupId : "529073513939720");
+            Console.WriteLine();           
+        }
+
     }
 }
