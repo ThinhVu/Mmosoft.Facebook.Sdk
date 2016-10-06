@@ -3,7 +3,8 @@ This api using your user email and password to like page or join group rather th
 
 Current support :
 - Login facebook with user id and password
-- Allow like/unlike page.
-- Allow join/ cancel join group
-- Allow post to wall, post to group
-- Allow get friend list of someone ( Graph API cannot do this job )
+- Like/unlike page.
+- Join/ cancel join group
+- Post to wall, post to group
+- Get friend list of someone ( Graph API cannot do this job )
+- Get member list of group, support admin or member.
