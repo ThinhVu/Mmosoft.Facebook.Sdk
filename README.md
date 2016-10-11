@@ -8,3 +8,4 @@ Current support :
 - Post to wall, post to group
 - Get friend list of someone ( Graph API cannot do this job )
 - Get member list of group, support admin or member.
+- Get page reviews and rating.
