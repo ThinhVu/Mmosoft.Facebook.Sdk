@@ -15,7 +15,7 @@ namespace FacebookAPI
             request.Headers.Add("Accept-Language", "en-US,en;q=0.5");
             request.Headers.Add("Accept-Encoding", "gzip");
             request.KeepAlive = true;
-            request.Host = "m.facebook.com";
+            request.Host = uri.Host;
             request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
             request.ProtocolVersion = HttpVersion.Version11;
             return request;

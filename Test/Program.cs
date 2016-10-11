@@ -7,15 +7,15 @@ namespace Test
 {
     class Program
     {
-        public static string UserId = "";
-        public static string Password = "";
+        public static string UserId = "your facebook username, email or phone number";
+        public static string Password = "your facebook password";
         public static FacebookClient fc = new FacebookClient(UserId, Password);
 
         public static void Main()
         {
             SetUpEnvironment();
-            
-            GetGroupMembersTest();
+
+            GetReviewsTest();
 
             Console.WriteLine(" -- Done-- ");
             Console.ReadLine();
@@ -41,7 +41,7 @@ namespace Test
         public static void PostToWallTest()
         {
             // Post to wall
-            fc.PostToWall(DateTime.Now.ToString() + " - Testing retrieve group members info ");
+            fc.PostToWall(DateTime.Now.ToString() + " - https://news.google.com\r\nPost to wall test\r\nMultiline.");
         }
 
         public static void PostToGroupTest()
@@ -63,15 +63,29 @@ namespace Test
             Console.WriteLine(friendIds.Count);
         }
 
-        public static void GetGroupMembersTest()
+        public static void GetGroupInfoTest()
         {
-            var gms = fc.GetGroupMembers(groupId: "127914800679263");
-            var admins = gms.Where(gm => gm.IsAdmin).Select(gm => gm);
-            foreach (var item in admins)
-            {
-                Console.WriteLine(item.DisplayName);
-            }
+            var gi = fc.GetGroupInfo("184155705105717");
             Console.WriteLine();
+        }        
+
+        public static void GetReviewsTest()
+        {
+            try
+            {
+                var reviews = fc.GetReviews("Phieukyyeu");
+                foreach (var rv in reviews)
+                {
+                    Console.WriteLine(rv.DisplayName);
+                    Console.WriteLine(rv.RateScore);
+                    Console.WriteLine(rv.Content);
+                    Console.WriteLine(new string('-', 40));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }                       
         }
     }
 }
