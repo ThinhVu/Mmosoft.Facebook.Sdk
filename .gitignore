@@ -1,3 +1,10 @@
-.vs
-bin
-obj
+# Visual studio
+/.vs
+
+# Output
+Mmosoft.Facebook.Sdk/bin*
+Mmosoft.Facebook.Sdk/obj*
+Mmosoft.Utility/bin*
+Mmosoft.Utility/obj*
+Test/bin*
+Test/obj*

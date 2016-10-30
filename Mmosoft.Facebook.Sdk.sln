@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacebookAPI", "FacebookAPI\FacebookAPI.csproj", "{247BFE1D-3016-4A3F-8891-704540C903FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Facebook.Sdk", "Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.csproj", "{247BFE1D-3016-4A3F-8891-704540C903FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{80109D67-7466-42CB-8612-59361AEEEBFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Utility", "Mmosoft.Utility\Mmosoft.Utility.csproj", "{99F9DCD6-8F50-416A-86E7-3C33E29139CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{80109D67-7466-42CB-8612-59361AEEEBFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80109D67-7466-42CB-8612-59361AEEEBFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80109D67-7466-42CB-8612-59361AEEEBFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99F9DCD6-8F50-416A-86E7-3C33E29139CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99F9DCD6-8F50-416A-86E7-3C33E29139CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99F9DCD6-8F50-416A-86E7-3C33E29139CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99F9DCD6-8F50-416A-86E7-3C33E29139CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
