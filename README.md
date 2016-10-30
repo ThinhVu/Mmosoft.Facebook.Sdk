@@ -1,4 +1,4 @@
-# facebookApi
+# Mmosoft.Facebook.Sdk
 This api using your user email and password to like page or join group rather than using graph api.
 
 Current support :
@@ -9,3 +9,4 @@ Current support :
 - Get friend list of someone ( Graph API cannot do this job )
 - Get member list of group, support admin or member.
 - Get page reviews and rating.
+- Get user id from user alias
