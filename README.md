@@ -8,5 +8,5 @@ Current support :
 - Post to wall, post to group
 - Get friend list of someone ( Graph API cannot do this job )
 - Get member list of group, support admin or member.
-- Get page reviews and rating.
+- Get page reviews and rating. ( Graph API cannot do this too )
 - Get user id from user alias
