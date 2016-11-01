@@ -1,0 +1,9 @@
+D:\kod\Mmosoft.Facebook.Sdk\Test\bin\Debug\Mmosoft.Facebook.Sdk.Test.exe.config
+D:\kod\Mmosoft.Facebook.Sdk\Test\bin\Debug\Mmosoft.Facebook.Sdk.Test.exe
+D:\kod\Mmosoft.Facebook.Sdk\Test\bin\Debug\Mmosoft.Facebook.Sdk.Test.pdb
+D:\kod\Mmosoft.Facebook.Sdk\Test\bin\Debug\Mmosoft.Facebook.Sdk.dll
+D:\kod\Mmosoft.Facebook.Sdk\Test\bin\Debug\HtmlAgilityPack.dll
+D:\kod\Mmosoft.Facebook.Sdk\Test\bin\Debug\Mmosoft.Facebook.Sdk.pdb
+D:\kod\Mmosoft.Facebook.Sdk\Test\obj\Debug\Mmosoft.Facebook.Sdk.Test.csprojResolveAssemblyReference.cache
+D:\kod\Mmosoft.Facebook.Sdk\Test\obj\Debug\Mmosoft.Facebook.Sdk.Test.exe
+D:\kod\Mmosoft.Facebook.Sdk\Test\obj\Debug\Mmosoft.Facebook.Sdk.Test.pdb

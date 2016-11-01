@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Facebook.Sdk", "Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.csproj", "{247BFE1D-3016-4A3F-8891-704540C903FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Facebook.Sdk.Test", "Test\Mmosoft.Facebook.Sdk.Test.csproj", "{80109D67-7466-42CB-8612-59361AEEEBFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Facebook.Sdk.Test", "Mmosoft.Facebook.Sdk.Test\Mmosoft.Facebook.Sdk.Test.csproj", "{80109D67-7466-42CB-8612-59361AEEEBFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
