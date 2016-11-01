@@ -15,17 +15,10 @@ namespace Mmosoft.Facebook.Sdk.Common
         /// </summary>
         public static string GetUserId1(string input)
         {
-            try
-            {
-                if (null == _friendListRegex1)
-                    _friendListRegex1 = new Regex(@"add_friend.php\?id=(?<id>\d+)", RegexOptions.Compiled);
+            if (null == _friendListRegex1)
+                _friendListRegex1 = new Regex(@"add_friend.php\?id=(?<id>\d+)", RegexOptions.Compiled);
 
-                return _friendListRegex1.Match(input).Groups["id"].Value;
-            }
-            catch
-            {
-                throw;
-            }
+            return _friendListRegex1.Match(input).Groups["id"].Value;
         }
 
         /// <summary>
@@ -35,17 +28,10 @@ namespace Mmosoft.Facebook.Sdk.Common
         /// <returns></returns>
         public static string GetUserId2(string input)
         {
-            try
-            {
-                if (null == _friendListRegex2)
-                    _friendListRegex1 = new Regex(@"\D+(?<id>\d+)\D+", RegexOptions.Compiled);
+            if (null == _friendListRegex2)
+                _friendListRegex2 = new Regex(@"\D+(?<id>\d+)\D+", RegexOptions.Compiled);
 
-                return _friendListRegex1.Match(input).Groups["id"].Value;
-            }
-            catch
-            {
-                throw;
-            }
+            return _friendListRegex2.Match(input).Groups["id"].Value;
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmosoft.Facebook.Sdk.Common
+namespace Mmosoft.Facebook.Sdk.Models
 {
-    public class PageReview
+    public class ReviewInfo
     {
         public string PageId { get; set; }
         public ICollection<Review> Reviews { get; }
 
-        public PageReview()
+        public ReviewInfo()
         {
             PageId = string.Empty;
             Reviews = new List<Review>();

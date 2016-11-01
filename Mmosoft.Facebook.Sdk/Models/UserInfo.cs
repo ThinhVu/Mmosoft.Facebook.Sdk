@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmosoft.Facebook.Sdk.Common
+namespace Mmosoft.Facebook.Sdk.Models
 {
     public class UserInfo
     {

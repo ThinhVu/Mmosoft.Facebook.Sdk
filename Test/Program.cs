@@ -4,9 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Diagnostics;
 
-using Mmosoft.Facebook.Sdk;
-
-namespace Test
+namespace Mmosoft.Facebook.Sdk.Test
 {
     class Program
     {
@@ -19,12 +17,12 @@ namespace Test
             Console.OutputEncoding = Encoding.UTF8;
 
             // Test function
-            JoinGroupTest();
+         
 
             // Done
             Console.WriteLine(" -- Done-- ");
             Console.ReadLine();
-        }
+        }        
 
         public static void JoinGroupTest()
         {

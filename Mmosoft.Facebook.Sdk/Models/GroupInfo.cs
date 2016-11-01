@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmosoft.Facebook.Sdk.Common
+namespace Mmosoft.Facebook.Sdk.Models
 {
     public class GroupInfo
     {      
         public string Id { get; set; }
         public string Name { get; set; }
-        public ICollection<GroupMember> Members { get; }
+        public List<GroupMember> Members { get; }
 
         public GroupInfo()
         {
