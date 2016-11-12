@@ -6,20 +6,37 @@ namespace Mmosoft.Facebook.Sdk
     public interface IFacebookClient
     {
         /// <summary>
+        /// Get your group info
+        /// </summary>
+        GroupInfo Group { get; set; }        
+
+        /// <summary>
         /// Join specified group
         /// </summary>
         /// <param name="groupId"></param>
-        void JoinGroup(string groupId);        
+        bool JoinGroup(string groupId);
+        /// <summary>
+        /// Cancel join specified group
+        /// </summary>
+        /// <param name="groupId"></param>
+        bool CancelJoinGroup(string groupId);
+        /// <summary>
+        /// Leave group
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        bool LeaveGroup(string groupId, bool preventReAdd);
         /// <summary>
         /// Like specified page
         /// </summary>
         /// <param name="pageId"></param>
-        void LikePage(string pageId);
+        bool LikePage(string pageId);
         /// <summary>
         /// Post message to you wall
         /// </summary>
         /// <param name="message"></param>
-        void PostToWall(string message);
+        /// 
+        void PostToWall(string message);        
         /// <summary>
         /// Post message to group you joined in
         /// </summary>
@@ -50,5 +67,11 @@ namespace Mmosoft.Facebook.Sdk
         /// <param name="userAlias"></param>
         /// <returns></returns>
         string GetUserId(string userAlias);
+        /// <summary>
+        /// Get pageId from page alias
+        /// </summary>
+        /// <param name="pageAlias"></param>
+        /// <returns></returns>
+        string GetPageId(string pageAlias);
     }
 }

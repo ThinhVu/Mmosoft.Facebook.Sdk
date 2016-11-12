@@ -1,10 +1,11 @@
 # Visual studio
 /.vs
+/.suo
 
 # Output
 Mmosoft.Facebook.Sdk/bin*
 Mmosoft.Facebook.Sdk/obj*
 Mmosoft.Utility/bin*
 Mmosoft.Utility/obj*
-Test/bin*
-Test/obj*
+Mmosoft.Facebook.Sdk.Test/bin*
+Mmosoft.Facebook.Sdk.Test/obj*

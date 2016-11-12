@@ -7,14 +7,21 @@ namespace Mmosoft.Facebook.Sdk.Common
     /// </summary>
     public static class LocalizationData
     {
-        public static List<string> IsGroupAdministrator = new List<string>{
-            "Admin",        // English
-            "Quản trị viên" // Vietnamese
-        };
+        public static ICollection<string> IsGroupAdministrator { get; private set; }
 
-        public static List<string> PageNotFound = new List<string>
+        public static ICollection<string> PageNotFound { get; private set; }
+
+        static LocalizationData()
         {
-            "The page you requested cannot be displayed right now." // English
-        };
+            IsGroupAdministrator = new List<string>
+            {
+                "Admin",        // English
+                "Quản trị viên" // Vietnamese
+            };
+            PageNotFound = new List<string>
+            {
+                "The page you requested cannot be displayed right now." // English
+            };
+        }
     }
 }

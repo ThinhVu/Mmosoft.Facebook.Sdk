@@ -5,7 +5,7 @@ namespace Mmosoft.Facebook.Sdk.Models
     public class ReviewInfo
     {
         public string PageId { get; set; }
-        public ICollection<Review> Reviews { get; }
+        public List<Review> Reviews { get; }
 
         public ReviewInfo()
         {

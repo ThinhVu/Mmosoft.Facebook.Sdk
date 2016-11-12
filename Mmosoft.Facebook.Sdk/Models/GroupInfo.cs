@@ -6,14 +6,14 @@ namespace Mmosoft.Facebook.Sdk.Models
     {      
         public string Id { get; set; }
         public string Name { get; set; }
-        public List<GroupMember> Members { get; }
+        public List<GroupMember> Members { get; set; }
 
         public GroupInfo()
         {
             Id = string.Empty;
             Name = string.Empty;
             Members = new List<GroupMember>();
-        }        
+        }
     }
 
     public class GroupMember

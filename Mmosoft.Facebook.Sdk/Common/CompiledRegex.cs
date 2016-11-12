@@ -2,7 +2,7 @@
 
 namespace Mmosoft.Facebook.Sdk.Common
 {
-    public class CompiledRegex
+    public static class CompiledRegex
     {
         /// <summary>
         /// Compiled Regex to get friend list

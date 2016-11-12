@@ -17,12 +17,12 @@ namespace Mmosoft.Facebook.Sdk.Test
             Console.OutputEncoding = Encoding.UTF8;
 
             // Test function
-         
+            GetFriendTest();
 
             // Done
             Console.WriteLine(" -- Done-- ");
             Console.ReadLine();
-        }        
+        }
 
         public static void JoinGroupTest()
         {
@@ -40,6 +40,22 @@ namespace Mmosoft.Facebook.Sdk.Test
                 Console.WriteLine("Source : " + ex.Source);
             }
 
+        }
+
+        public static void LeaveGroupTest()
+        {
+            try
+            {
+                var fc = new FacebookClient(UserId, Password);                
+                fc.LeaveGroup("426581264196328", false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Message : " + ex.Message);
+                Console.WriteLine("StackTrace : " + ex.StackTrace);
+                Console.WriteLine("TargetSite : " + ex.TargetSite);
+                Console.WriteLine("Source : " + ex.Source);
+            }
         }
 
         public static void LikePageTest()
@@ -93,13 +109,38 @@ namespace Mmosoft.Facebook.Sdk.Test
             }
         }
 
+        public static void TestGetReview()
+        {
+            try
+            {
+                var fc = new FacebookClient(UserId, Password);
+                var reviewInfo = fc.GetReviewInfo("ArduinoCommunityVN");
+                Console.WriteLine("page id :" + reviewInfo.PageId);
+                foreach (var item in reviewInfo.Reviews)
+                {
+                    Console.WriteLine("user id :" +  item.UserId);
+                    Console.WriteLine("user name :"  +item.UserDisplayName);
+                    Console.WriteLine("content :" + item.Content);
+                    Console.WriteLine("rate sccore :" + item.RateScore);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Message : " + ex.Message);
+                Console.WriteLine("StackTrace : " + ex.StackTrace);
+                Console.WriteLine("TargetSite : " + ex.TargetSite);
+                Console.WriteLine("Source : " + ex.Source);
+            }
+
+        }
+
         public static void GetFriendTest()
         {
             try
             {
-                var facebookClient = new FacebookClient(UserId, Password);                      
+                var facebookClient = new FacebookClient(UserId, Password);
 
-                var friends = facebookClient.GetFriendInfo();
+                var friends = facebookClient.GetFriendInfo("vutrongquyet");
                 // object -> json
                 var result = new StringBuilder("{ \"id\" : \"" + friends.UserId + "\", \"friends\" : [");
                 foreach (var friend in friends.Friends)
@@ -143,6 +184,23 @@ namespace Mmosoft.Facebook.Sdk.Test
                 Console.WriteLine("TargetSite : " + ex.TargetSite);
                 Console.WriteLine("Source : " + ex.Source);
             }
+        }
+
+        public static void GetPageIdFromAlias()
+        {
+            try
+            {
+                var fc = new FacebookClient(UserId, Password);                
+                Console.WriteLine(fc.GetPageId("ArduinoCommunityVN"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Message : " + ex.Message);
+                Console.WriteLine("StackTrace : " + ex.StackTrace);
+                Console.WriteLine("TargetSite : " + ex.TargetSite);
+                Console.WriteLine("Source : " + ex.Source);
+            }
+
         }
     }
 }

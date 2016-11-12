@@ -96,7 +96,7 @@ namespace Mmosoft.Facebook.Sdk.Common
         /// <param name="url">Url want to get DOM</param>
         /// <param name="cookieContainer">cookie you want to pass for this method</param>        
         /// <returns>DOM object parsed from html content</returns>
-        public static HtmlNode LoadDOM(string url, ref CookieContainer cookieContainer)
+        public static HtmlNode LoadDom(string url, ref CookieContainer cookieContainer)
         {
             var html = string.Empty;
 
