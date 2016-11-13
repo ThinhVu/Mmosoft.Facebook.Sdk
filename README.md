@@ -7,6 +7,7 @@ Current support :
 - Join/ cancel join group
 - Post to wall, post to group
 - Get friend list of someone ( Graph API cannot do this job )
-- Get member list of group, support admin or member.
+- Get member list of group, detect user is admin or member.
 - Get page reviews and rating. ( Graph API cannot do this too )
-- Get user id from user alias
+- Get user info from user id or user alias ( info will be collect at the moment is Id, Name, Avatar, ListFriends of this user)
+- Get page id from page alias.
