@@ -40,7 +40,7 @@ namespace Mmosoft.Facebook.Sdk.Common
                 throw;
             }
         }
-              
+
         /// <summary>
         /// Send GET request to requestUri and recv response
         /// </summary>
@@ -100,7 +100,7 @@ namespace Mmosoft.Facebook.Sdk.Common
         {
             var html = string.Empty;
 
-            using (var resp = Http.Get(new Uri(url), cookieContainer))
+            using (var resp = SynchronousHttp.Get(new Uri(url), cookieContainer))
             using (var respReader = new StreamReader(new GZipStream(resp.GetResponseStream(), CompressionMode.Decompress)))
             {
                 if (cookieContainer != null) cookieContainer.Add(resp.Cookies);
@@ -113,5 +113,5 @@ namespace Mmosoft.Facebook.Sdk.Common
 
             return htmlDocument.DocumentNode;
         }
-    }
+    }   
 }

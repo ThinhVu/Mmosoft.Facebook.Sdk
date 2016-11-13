@@ -3,6 +3,7 @@ using System.Text;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using Mmosoft.Facebook.Sdk.Common;
 
 namespace Mmosoft.Facebook.Sdk.Test
 {
@@ -138,15 +139,29 @@ namespace Mmosoft.Facebook.Sdk.Test
         {
             try
             {
-                var facebookClient = new FacebookClient(UserId, Password);
+                var facebookClient = new FacebookClient(UserId, Password, new FileLog());
 
-                var friends = facebookClient.GetFriendInfo("vutrongquyet");
+                var friends = facebookClient.GetUserInfo("vutrongquyet", true, true);
                 // object -> json
-                var result = new StringBuilder("{ \"id\" : \"" + friends.UserId + "\", \"friends\" : [");
-                foreach (var friend in friends.Friends)
-                    result.Append("{ \"id\" : \"" + friend.Id + "\", \"name\" : \"" + friend.Name + "\"},");
-                result.Remove(result.Length - 1, 1);
-                result.Append("], \"counts\" : " + friends.Friends.Count + "}");
+                var result = new StringBuilder();
+                // Open bracket
+                result.Append("{");
+                // append id
+                result.Append("\"id\" : \"" + friends.Id + "\"");
+                // append friends
+                if (friends.Friends != null)
+                {
+                    // append count
+                    result.Append(", \"counts\" : " + friends.Friends.Count + ", \"friends\" : [");
+                    foreach (var friend in friends.Friends)
+                    {
+                        result.Append("{ \"id\" : \"" + friend + "\"},");
+                    }                        
+                    result.Remove(result.Length - 1, 1);
+                    result.Append("]");
+                }
+                // append close tag
+                result.Append("}");
 
                 // write to file data.txt
                 File.WriteAllText("data.txt", result.ToString());
