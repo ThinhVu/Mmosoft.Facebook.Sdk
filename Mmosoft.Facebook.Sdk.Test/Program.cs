@@ -141,13 +141,13 @@ namespace Mmosoft.Facebook.Sdk.Test
             {
                 var facebookClient = new FacebookClient(UserId, Password, new FileLog());
 
-                var friends = facebookClient.GetUserInfo("vutrongquyet", true, true);
+                var friends = facebookClient.GetUserInfo("100000792505718", true, true);
                 // object -> json
                 var result = new StringBuilder();
                 // Open bracket
                 result.Append("{");
                 // append id
-                result.Append("\"id\" : \"" + friends.Id + "\"");
+                result.Append("\"id\" : \"" + friends._id + "\"");
                 // append friends
                 if (friends.Friends != null)
                 {

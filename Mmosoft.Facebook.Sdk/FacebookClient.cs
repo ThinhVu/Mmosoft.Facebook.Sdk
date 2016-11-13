@@ -356,17 +356,28 @@ namespace Mmosoft.Facebook.Sdk
                 throw new ArgumentException("userIdOrAlias must not null or empty");
             }
 
+            UserInfo userInfo = new UserInfo();
+
             // TODO : Reduce check
             // The first time we passed userIdOrAlias
             // We don't know it is userIdOrAlias so we need to check
             // The second time when we known passed param is user id or alias
             // But we still need check again. it make perf decrease.
+
             bool isUserId = !CompiledRegex.MatchNonDigit.Match(userIdOrAlias).Success;
-            string userAboutUrl = isUserId ? "profile.php?v=info&id=" + userIdOrAlias : userIdOrAlias + "/about";
+            string userAboutUrl = string.Empty;
+            if (isUserId)
+            {
+                userAboutUrl = "profile.php?v=info&id=" + userIdOrAlias;
+                userInfo._id = userIdOrAlias;
+            }
+            else
+            {
+                userAboutUrl = userIdOrAlias + "/about";
+            }   
+                     
             HtmlNode htmlDom = SynchronousHttp.LoadDom("https://m.facebook.com/" + userAboutUrl, ref cookies);
-
-            UserInfo userInfo = new UserInfo();
-
+            
             // Get avatar href :
             // avatarAnchorElem contain avatar image source, user display name and maybe contain id.
             // if userIdOrAlias is current user then we pick wrong anchor, pick Another anchor
@@ -405,7 +416,7 @@ namespace Mmosoft.Facebook.Sdk
                     if ((idMatch = Regex.Match(avatarHref, @"/photo.php\?fbid=\d+&amp;id=(?<id>\d+)")).Success ||
                         (idMatch = Regex.Match(avatarHref, @"/profile/picture/view/\?profile_id=(?<id>\d+)")).Success)
                     {
-                        userInfo.Id = idMatch.Groups["id"].Value;
+                        userInfo._id = idMatch.Groups["id"].Value;
                     }
                     // if it does not correct then we need another pattern
                     // just log it for later fix
@@ -439,7 +450,7 @@ namespace Mmosoft.Facebook.Sdk
                                 (idMatch = GlobalData.HrefRegexes[hrefInnerText].Match(href)).Success)
                             {
                                 // If id has been detected, break
-                                userInfo.Id = idMatch.Groups["id"].Value;
+                                userInfo._id = idMatch.Groups["id"].Value;
                                 break;
                             }
                         }
@@ -473,7 +484,7 @@ namespace Mmosoft.Facebook.Sdk
                                     GlobalData.BtnHrefRegexes.ContainsKey(actionInnerText) &&
                                     (idMatch = GlobalData.BtnHrefRegexes[actionInnerText].Match(actionHref)).Success)
                                 {
-                                    userInfo.Id = idMatch.Groups["id"].Value;
+                                    userInfo._id = idMatch.Groups["id"].Value;
                                     break;
                                 }
                             }
@@ -505,9 +516,9 @@ namespace Mmosoft.Facebook.Sdk
             }
 
             // get user friend list if included
-            if (includedFriendList)
+            if (includedFriendList && !string.IsNullOrWhiteSpace(userInfo._id))
             {
-                var firstFriendPageUrl = "https://m.facebook.com/profile.php?v=friends&startindex=1&id=" + userInfo.Id;
+                var firstFriendPageUrl = "https://m.facebook.com/profile.php?v=friends&startindex=1&id=" + userInfo._id;
                 userInfo.Friends = GetFriends(firstFriendPageUrl);
             }
 
@@ -583,7 +594,7 @@ namespace Mmosoft.Facebook.Sdk
                             {
                                 userProfileHref = userProfileHref.Substring(1);
                             }                            
-                            id = GetUserInfo(userProfileHref).Id;
+                            id = GetUserInfo(userProfileHref)._id;
                             if (!string.IsNullOrWhiteSpace(id))
                             {
                                 friends.Add(id);
