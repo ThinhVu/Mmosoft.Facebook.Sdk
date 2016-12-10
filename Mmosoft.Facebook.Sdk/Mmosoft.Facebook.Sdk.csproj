@@ -69,6 +69,7 @@
     <Compile Include="Common\Http.cs" />
     <Compile Include="Common\GlobalizationData.cs" />
     <Compile Include="Common\ILog.cs" />
+    <Compile Include="FacebookAccount.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Exceptions\MissingReviewPageException.cs" />
     <Compile Include="Exceptions\LogOnFailureException.cs" />

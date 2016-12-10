@@ -9,16 +9,20 @@ namespace Mmosoft.Facebook.Sdk.Test
 {
     class Program
     {
-        public static string UserId = "";
-        public static string Password = "";
+        public static string UserId = "coraulo@yahoo.com";
+        public static string Password = "123asd456";
 
         public static void Main()
         {
             // Setup
             Console.OutputEncoding = Encoding.UTF8;
 
+            var facebookClient = new FacebookClient(UserId, Password);
+
+            var friends = facebookClient.GetUserInfo("100013097372642", true, true);
+
             // Test function
-            GetFriendTest();
+            // GetFriendTest();
 
             // Done
             Console.WriteLine(" -- Done-- ");
@@ -139,9 +143,9 @@ namespace Mmosoft.Facebook.Sdk.Test
         {
             try
             {
-                var facebookClient = new FacebookClient(UserId, Password, new FileLog());
+                var facebookClient = new FacebookClient(UserId, Password);
 
-                var friends = facebookClient.GetUserInfo("100000792505718", true, true);
+                var friends = facebookClient.GetUserInfo("f.i.n.0ne", true, true);
                 // object -> json
                 var result = new StringBuilder();
                 // Open bracket

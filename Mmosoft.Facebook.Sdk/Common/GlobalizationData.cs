@@ -8,7 +8,8 @@ namespace Mmosoft.Facebook.Sdk.Common
     /// </summary>
     public static class GlobalData
     {
-        public static string EditProfilePicture;
+        public static string EditProfilePicture = "Edit Profile Picture";
+        public static string AddProfilePicture = "Add Profile Picture";
         public static ICollection<string> IsGroupAdministrator;
         public static ICollection<string> PageNotFound;
         public static IDictionary<string, Regex> HrefRegexes;
@@ -16,9 +17,7 @@ namespace Mmosoft.Facebook.Sdk.Common
 
         // Init data
         static GlobalData()
-        {
-            EditProfilePicture = "Edit Profile Picture";
-
+        {            
             IsGroupAdministrator = new List<string>
             {
                 "Admin",        // English

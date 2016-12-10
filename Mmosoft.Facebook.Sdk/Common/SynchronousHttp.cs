@@ -9,25 +9,29 @@ namespace Mmosoft.Facebook.Sdk.Common
     /// <summary>
     /// Control request speed to facebook
     /// </summary>
-    public static class SynchronousHttp
+    public class SynchronousHttp
     {
         /// <summary>
         /// Get or set interval time per each request
         /// </summary>
-        public static TimeSpan Interval { get; set; }
+        public TimeSpan Interval { get; set; }
 
         /// <summary>
         /// store last request time
         /// </summary>
-        private static DateTime lastRequestTime;
+        private DateTime lastRequestTime;
 
-        static SynchronousHttp()
+        /// <summary>
+        /// Init new instance of SynchronousHttp request
+        /// </summary>
+        /// <param name="interval"></param>
+        public SynchronousHttp(TimeSpan interval)
         {
             lastRequestTime = DateTime.Now;
-            Interval = TimeSpan.FromMilliseconds(200);
+            Interval = Interval;
         }
 
-        private static void Block()
+        private void Block()
         {
             while (lastRequestTime > DateTime.Now.Subtract(Interval))
             {
@@ -36,19 +40,19 @@ namespace Mmosoft.Facebook.Sdk.Common
             lastRequestTime = DateTime.Now;
         }
 
-        public static HttpWebResponse Get(Uri requestUri, [Optional] CookieContainer cookies)
+        public HttpWebResponse Get(Uri requestUri, [Optional] CookieContainer cookies)
         {
             Block();
             return Http.Get(requestUri, cookies);
         }
 
-        public static HttpWebResponse Post(Uri requestUri, string content, [Optional] CookieContainer cookies)
+        public HttpWebResponse Post(Uri requestUri, string content, [Optional] CookieContainer cookies)
         {
             Block();
             return Http.Post(requestUri, content, cookies);
         }
 
-        public static HtmlNode LoadDom(string url, ref CookieContainer cookieContainer)
+        public HtmlNode LoadDom(string url, ref CookieContainer cookieContainer)
         {
             Block();
             return Http.LoadDom(url, ref cookieContainer);

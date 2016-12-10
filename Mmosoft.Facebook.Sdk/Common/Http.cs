@@ -100,7 +100,7 @@ namespace Mmosoft.Facebook.Sdk.Common
         {
             var html = string.Empty;
 
-            using (var resp = SynchronousHttp.Get(new Uri(url), cookieContainer))
+            using (var resp = Get(new Uri(url), cookieContainer))
             using (var respReader = new StreamReader(new GZipStream(resp.GetResponseStream(), CompressionMode.Decompress)))
             {
                 if (cookieContainer != null) cookieContainer.Add(resp.Cookies);

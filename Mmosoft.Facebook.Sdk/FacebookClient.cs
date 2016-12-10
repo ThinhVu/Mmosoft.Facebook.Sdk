@@ -16,13 +16,17 @@ using System.Diagnostics;
 
 namespace Mmosoft.Facebook.Sdk
 {
+    // TODO : Check references List
+
+   
+
     public class FacebookClient : IDisposable
     {
         /// <summary>
         /// Cookie container contain cookies for later request
         /// </summary>
-        private CookieContainer cookies;
-        private ILog log;
+        private CookieContainer _cookie;
+        private ILog _log;
 
         /// <summary>
         /// Facebook email
@@ -34,57 +38,55 @@ namespace Mmosoft.Facebook.Sdk
         public string Password { get; set; }
 
         /// <summary>
+        /// http request
+        /// </summary>
+        private SynchronousHttp _http;
+
+        /// <summary>
         /// Create new instance of Facebook client class
         /// </summary>
         /// <param name="username">Facebook email or phone number</param>
         /// <param name="password">Facebook password</param>
         /// <exception cref="ArgumentException">Appear if email or password did not provided</exception>
         /// <exception cref="NodeNotFoundException">Exception raise if Login form DOM not found</exception>
-        public FacebookClient(string username, string password, ILog log = null)
+        public FacebookClient(string user, string password, int interval = 100, ILog log = null)
         {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                throw new ArgumentException("email does must not null or empty or contains only whitespace.");
-            }
+            // Init synchrous Http request builder            
+            _http = new SynchronousHttp(TimeSpan.FromMilliseconds(interval));
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                throw new ArgumentException("password does must not null or empty or contains only whitespace.");
-            }
-
-            Username = username;
-            Password = password;
-
+            // Init log 
+            // TODO: Replace with log4net
             if (log == null)
             {
-                this.log = new ConsoleLog();
+                _log = new ConsoleLog();
             }
             else
             {
-                this.log = log;
+                _log = log;
             }
 
-            cookies = new CookieContainer();
+            Username = user;
+            Password = password;
 
             if (!LogOn())
             {
-                throw new LogOnFailureException("email=" + this.Username + "&password=" + this.Password);
-            }
+                throw new LogOnFailureException();
+            }        
         }
 
         /// <summary>
-        /// Login method to get cookies
+        /// Login with credentials and store cookie for later using
         /// </summary>
         /// <returns>Bool value indicate that this user logged-in or not</returns>
         private bool LogOn()
         {
-            var documentNode = SynchronousHttp.LoadDom("https://m.facebook.com", ref cookies);
+            var documentNode = _http.LoadDom("https://m.facebook.com", ref _cookie);
 
             // Get login form Dom object
             var logInFormNode = documentNode.SelectSingleNode("//form[@id='login_form']");
 
             // get input collection
-            var inputCollection = new List<string> { "email=" + Username + "&pass=" + Password };
+            var inputList = new List<string>{ "email=" + Username + "&pass=" + Password };
 
             foreach (HtmlNode input in logInFormNode.ParentNode.Elements("input"))
             {
@@ -93,15 +95,15 @@ namespace Mmosoft.Facebook.Sdk
                 // else we need to get info and add key-value pair to collection
                 var name = input.Attributes["name"].Value;
                 var value = input.Attributes["value"].Value;
-                inputCollection.Add(name + "=" + value);
+                inputList.Add(name + "=" + value);
             }
             // now join to get content for Post request
-            var content = string.Join("&", inputCollection);
-            using (var loginResponse = SynchronousHttp.Post(new Uri("https://m.facebook.com/login.php"), content, cookies))
+            var content = string.Join("&", inputList);
+            using (var loginResponse = _http.Post(new Uri("https://m.facebook.com/login.php"), content, _cookie))
             {
                 if (loginResponse.Cookies["c_user"] != null)
                 {
-                    cookies.Add(loginResponse.Cookies);
+                    _cookie.Add(loginResponse.Cookies);
                     return true;
                 }
                 else
@@ -116,8 +118,8 @@ namespace Mmosoft.Facebook.Sdk
         /// </summary>
         /// <param name="groupId">Id's target group</param>
         public bool JoinGroup(string groupId)
-        {
-            var htmlNode = SynchronousHttp.LoadDom("https://m.facebook.com/groups/" + groupId, ref cookies);
+        {            
+            var htmlNode = _http.LoadDom("https://m.facebook.com/groups/" + groupId, ref _cookie);
             var formNodes = htmlNode.SelectNodes("//form");
 
             foreach (var formNode in formNodes)
@@ -133,12 +135,14 @@ namespace Mmosoft.Facebook.Sdk
                         inputs.Add(name + "=" + value);
                     }
                     var content = string.Join("&", inputs);
+                    
                     // post
                     var actionUrl = "https://m.facebook.com" + formNode.Attributes["action"].Value;
+                    
                     // send post request and store cookies               
-                    using (var joinGroupResponse = SynchronousHttp.Post(new Uri(actionUrl), content, cookies))
+                    using (var joinGroupResponse = _http.Post(new Uri(actionUrl), content, _cookie))
                     {
-                        cookies.Add(joinGroupResponse.Cookies);
+                        _cookie.Add(joinGroupResponse.Cookies);
                         return true;
                     }
                 }
@@ -153,8 +157,8 @@ namespace Mmosoft.Facebook.Sdk
         /// <param name="groupId"></param>
         /// <returns></returns>
         public bool CancelJoinGroup(string groupId)
-        {
-            var htmlNode = SynchronousHttp.LoadDom("https://m.facebook.com/groups/" + groupId, ref cookies);
+        {            
+            var htmlNode = _http.LoadDom("https://m.facebook.com/groups/" + groupId, ref _cookie);
             var formNodes = htmlNode.SelectNodes("//form");
 
             foreach (var formNode in formNodes)
@@ -177,9 +181,9 @@ namespace Mmosoft.Facebook.Sdk
 
                     var actionUrl = "https://m.facebook.com" + formNode.Attributes["action"].Value;
 
-                    using (var joinGroupResponse = SynchronousHttp.Post(new Uri(actionUrl), content, cookies))
+                    using (var joinGroupResponse = _http.Post(new Uri(actionUrl), content, _cookie))
                     {
-                        cookies.Add(joinGroupResponse.Cookies);
+                        _cookie.Add(joinGroupResponse.Cookies);
                         return true;
                     }
                 }
@@ -196,7 +200,7 @@ namespace Mmosoft.Facebook.Sdk
         /// <returns></returns>
         public bool LeaveGroup(string groupId, bool preventReAdd)
         {
-            var htmlNode = SynchronousHttp.LoadDom("https://m.facebook.com/group/leave/?group_id=" + groupId, ref cookies);
+            var htmlNode = _http.LoadDom("https://m.facebook.com/group/leave/?group_id=" + groupId, ref _cookie);
 
             var formNodes = htmlNode.SelectNodes("//form");
 
@@ -229,9 +233,9 @@ namespace Mmosoft.Facebook.Sdk
 
                     var actionUrl = "https://m.facebook.com" + formNode.Attributes["action"].Value;
 
-                    using (var joinGroupResponse = SynchronousHttp.Post(new Uri(actionUrl), content, cookies))
+                    using (var joinGroupResponse = _http.Post(new Uri(actionUrl), content, _cookie))
                     {
-                        cookies.Add(joinGroupResponse.Cookies);
+                        _cookie.Add(joinGroupResponse.Cookies);
                         return true;
                     }
                 }
@@ -246,7 +250,8 @@ namespace Mmosoft.Facebook.Sdk
         /// <param name="pageIdOrAlias">Id's target page</param>
         public bool LikePage(string pageIdOrAlias)
         {
-            var htmlNode = SynchronousHttp.LoadDom("https://m.facebook.com/" + pageIdOrAlias, ref cookies);
+            // TODO: Fix
+            var htmlNode = _http.LoadDom("https://m.facebook.com/" + pageIdOrAlias, ref _cookie);
             var pagesMbasicContextItemsId = htmlNode.SelectSingleNode("//div[@id='pages_mbasic_context_items_id']");
             if (pagesMbasicContextItemsId != null)
             {
@@ -260,9 +265,9 @@ namespace Mmosoft.Facebook.Sdk
                     var href = anchor.Attributes["href"]?.Value;
                     if (href != null && compiledRegex.Match(href).Success)
                     {
-                        using (var likeResponse = SynchronousHttp.Get(new Uri("https://m.facebook.com" + href), cookies))
+                        using (var likeResponse = _http.Get(new Uri("https://m.facebook.com" + href), _cookie))
                         {
-                            cookies.Add(likeResponse.Cookies);
+                            _cookie.Add(likeResponse.Cookies);
                             return true;
                         }
                     }
@@ -316,7 +321,7 @@ namespace Mmosoft.Facebook.Sdk
             }
 
             // load html node
-            var htmlNode = SynchronousHttp.LoadDom(loadDOMUrl, ref cookies);
+            var htmlNode = _http.LoadDom(loadDOMUrl, ref _cookie);
 
             // get form node
             var formNode = htmlNode.SelectSingleNode(formNodeXPath);
@@ -335,9 +340,9 @@ namespace Mmosoft.Facebook.Sdk
 
             // Post action
             var actionUrl = "https://m.facebook.com" + formNode.Attributes["action"].Value;
-            using (var joinGroupResponse = SynchronousHttp.Post(new Uri(actionUrl), content, cookies))
+            using (var joinGroupResponse = _http.Post(new Uri(actionUrl), content, _cookie))
             {
-                cookies.Add(joinGroupResponse.Cookies);
+                _cookie.Add(joinGroupResponse.Cookies);
             }
         }
 
@@ -364,37 +369,54 @@ namespace Mmosoft.Facebook.Sdk
             // The second time when we known passed param is user id or alias
             // But we still need check again. it make perf decrease.
 
-            bool isUserId = !CompiledRegex.MatchNonDigit.Match(userIdOrAlias).Success;
-            string userAboutUrl = string.Empty;
+            var userAboutUrl = string.Empty;
+            bool isUserId = !CompiledRegex.MatchNonDigit.Match(userIdOrAlias).Success;            
             if (isUserId)
             {
                 userAboutUrl = "profile.php?v=info&id=" + userIdOrAlias;
                 userInfo._id = userIdOrAlias;
+                userInfo.Alias = string.Empty;                
             }
             else
             {
                 userAboutUrl = userIdOrAlias + "/about";
-            }   
-                     
-            HtmlNode htmlDom = SynchronousHttp.LoadDom("https://m.facebook.com/" + userAboutUrl, ref cookies);
-            
+                userInfo._id = string.Empty;
+                userInfo.Alias = userIdOrAlias;
+            }
+
+            HtmlNode htmlDom = _http.LoadDom("https://m.facebook.com/" + userAboutUrl, ref _cookie);
+
             // Get avatar href :
             // avatarAnchorElem contain avatar image source, user display name and maybe contain id.
             // if userIdOrAlias is current user then we pick wrong anchor, pick Another anchor
             HtmlNode avatarA = htmlDom.SelectSingleNode("//div[@id='root']/div/div/div/div/div/a");
-            if ((avatarA == null) ||
-                (avatarA != null && avatarA.InnerText == GlobalData.EditProfilePicture))
+            if (avatarA == null)
+            {
+                avatarA = htmlDom.SelectSingleNode("//div[@id='root']/div/div/div/div/div/div/a");
+            }
+            else if (avatarA.InnerText == GlobalData.EditProfilePicture ||  // for current user
+                avatarA.InnerText == GlobalData.AddProfilePicture) // for animate avatar
             {
                 // If 1st is not a tag what we want, select 2nd a tag
                 avatarA = htmlDom.SelectSingleNode("//div[@id='root']/div/div/div/div/div/div/a");
-
-                // if 2nd a tag is null then we does not found any a tag to detect user avatar anchor
-                // log it for later fix
-                if (avatarA == null)
-                {
-                    log.WriteL("Could not select avatarA with this link : " + userAboutUrl);
-                }
             }
+            else if ( // for animate avatar
+                avatarA.PreviousSibling?.SelectSingleNode("/a/img") != null ||
+                avatarA.SelectSingleNode("div/a/img") != null)
+            {
+                var anchors = avatarA.SelectNodes("div/a");
+                if (anchors != null)
+                {
+                    foreach (var anchor in anchors)
+                    {
+                        if (anchor.SelectSingleNode("img") != null)
+                        {
+                            avatarA = anchor;
+                            break;
+                        }
+                    }
+                }
+            }           
 
             // get user id
             if (!isUserId)
@@ -414,18 +436,15 @@ namespace Mmosoft.Facebook.Sdk
                     // /profile/picture/view/?profile_id=100003877944061&...
                     // We just need to match it from our pattern. If match success then pick this id
                     if ((idMatch = Regex.Match(avatarHref, @"/photo.php\?fbid=\d+&amp;id=(?<id>\d+)")).Success ||
-                        (idMatch = Regex.Match(avatarHref, @"/profile/picture/view/\?profile_id=(?<id>\d+)")).Success)
+                        (idMatch = Regex.Match(avatarHref, @"/profile/picture/view/\?profile_id=(?<id>\d+)")).Success ||
+                        (idMatch = Regex.Match(avatarHref, @"/story.php\?story_fbid=\d+&amp;id=(?<id>\d+)")).Success) // for the one who have animate avatar, at the moment is right
                     {
                         userInfo._id = idMatch.Groups["id"].Value;
                     }
-                    // if it does not correct then we need another pattern
-                    // just log it for later fix
-                    else
-                    {
-                        log.WriteL(userAboutUrl + " avatarHref pattern does not recognize exactly. Adding another pattern.");
-                    }
                 }
-                else
+
+                // try another way
+                if (string.IsNullOrEmpty(userInfo._id))
                 {
                     // If avatarHref is null then we need to detect from another element in DOM
                     // In this step, i trying to detect user id from hyperlink : 
@@ -433,7 +452,7 @@ namespace Mmosoft.Facebook.Sdk
                     // NOTE :
                     //      - Activity log only show in current user about page
                     //
-                    var hrefNodes = htmlDom.SelectNodes("//div[@id='root']/div/div/a");
+                    var hrefNodes = htmlDom.SelectNodes("//div[@id='root']/div/div/div/a") ?? htmlDom.SelectNodes("//div[@id='root']/div/div/a");
                     if (hrefNodes != null)
                     {
                         // Loop through all href we found    
@@ -455,47 +474,49 @@ namespace Mmosoft.Facebook.Sdk
                             }
                         }
                     }
-                    // if hrefNode is null then we need to detect user id by another way
-                    else
-                    {
-                        // Step 3 : 
-                        // trying get uid from action button : Add Friend, Message, Follow, More
-                        // I only select the 1st xpath,the second xpath will be check in the future.                                               
-                        var btnHreftNodes = htmlDom.SelectNodes("//div[@id='root']/div/div/div/table/tr/td/a");
-                        // ??htmlDom.SelectNodes("//div[@id='root']/div/div/div");
+                }
 
-                        // If we found some button nodes :
-                        //      - Add Friend node if we does not add friend with this user
-                        //      - Message if this user allow we can send message to him/her
-                        //      - Follow if this user allow we can follow him/her and we not follow him/her before
-                        //      - More if we can see more about user - i think that, maybe is incorrect.
-                        if (btnHreftNodes != null)
+                // Try another way
+                if (string.IsNullOrEmpty(userInfo._id))
+                {
+                    // Step 3 : 
+                    // trying get uid from action button : Add Friend, Message, Follow, More
+                    // I only select the 1st xpath,the second xpath will be check in the future.                                               
+                    var btnHreftNodes = htmlDom.SelectNodes("//div[@id='root']/div/div/div/table/tr/td/a");
+                    // ??htmlDom.SelectNodes("//div[@id='root']/div/div/div");
+
+                    // If we found some button nodes :
+                    //      - Add Friend node if we does not add friend with this user
+                    //      - Message if this user allow we can send message to him/her
+                    //      - Follow if this user allow we can follow him/her and we not follow him/her before
+                    //      - More if we can see more about user - i think that, maybe is incorrect.
+                    if (btnHreftNodes != null)
+                    {
+                        foreach (var btnHreftNode in btnHreftNodes)
                         {
-                            foreach (var btnHreftNode in btnHreftNodes)
+                            // if href and innertext not null then we can trying detect user id by compiled regex
+                            // NOTE :
+                            //      - Check CompiledRegex if you think it not correct anymore
+                            //      - Edit Key if you use another Language rather than English to access FB
+                            var actionHref = btnHreftNode?.Attributes["href"]?.Value;
+                            var actionInnerText = btnHreftNode.InnerText;
+                            if (actionHref != null &&
+                                actionInnerText != null &&
+                                GlobalData.BtnHrefRegexes.ContainsKey(actionInnerText) &&
+                                (idMatch = GlobalData.BtnHrefRegexes[actionInnerText].Match(actionHref)).Success)
                             {
-                                // if href and innertext not null then we can trying detect user id by compiled regex
-                                // NOTE :
-                                //      - Check CompiledRegex if you think it not correct anymore
-                                //      - Edit Key if you use another Language rather than English to access FB
-                                var actionHref = btnHreftNode?.Attributes["href"]?.Value;
-                                var actionInnerText = btnHreftNode.InnerText;
-                                if (actionHref != null &&
-                                    actionInnerText != null &&
-                                    GlobalData.BtnHrefRegexes.ContainsKey(actionInnerText) &&
-                                    (idMatch = GlobalData.BtnHrefRegexes[actionInnerText].Match(actionHref)).Success)
-                                {
-                                    userInfo._id = idMatch.Groups["id"].Value;
-                                    break;
-                                }
+                                userInfo._id = idMatch.Groups["id"].Value;
+                                break;
                             }
                         }
-                        else
-                        {
-                            // If btnHref also null then we just log it for later fix
-                            log.WriteL("All method to detect user id is fail. Update your code. Addition info : " + userAboutUrl);
-                        }
                     }
-                }
+                }                
+            }
+
+            if (string.IsNullOrEmpty(userInfo._id))
+            {
+                _log.WriteL("Could not detect id from : " + userAboutUrl);
+                return null;
             }
 
             // get user about
@@ -511,14 +532,17 @@ namespace Mmosoft.Facebook.Sdk
                 }
                 else
                 {
-                    log.WriteL("Img Tag in Avatar is null - Need to check again. Addition info : " + userAboutUrl);
+                    _log.WriteL("Img tag in avatar is null. Addition info : " + userAboutUrl);
                 }
             }
 
             // get user friend list if included
-            if (includedFriendList && !string.IsNullOrWhiteSpace(userInfo._id))
+            // at this step we do not need to check user id anymore
+            // if user id is null then we had return before.
+            if (includedFriendList)
             {
-                var firstFriendPageUrl = "https://m.facebook.com/profile.php?v=friends&startindex=1&id=" + userInfo._id;
+                // TODO: startindex = 1 => lost the first person
+                var firstFriendPageUrl = "https://m.facebook.com/profile.php?v=friends&startindex=0&id=" + userInfo._id;
                 userInfo.Friends = GetFriends(firstFriendPageUrl);
             }
 
@@ -549,7 +573,7 @@ namespace Mmosoft.Facebook.Sdk
             {
                 string currentFriendPageUrl = friendPages.Dequeue();
 
-                HtmlNode htmlNode = SynchronousHttp.LoadDom(currentFriendPageUrl, ref cookies);
+                HtmlNode htmlNode = _http.LoadDom(currentFriendPageUrl, ref _cookie);
 
                 // select root node which is div element with id is root, does not real root node
                 var rootNode = htmlNode.SelectSingleNode("//div[@id='root']");
@@ -566,7 +590,7 @@ namespace Mmosoft.Facebook.Sdk
                 hDoc.LoadHtml(rootNode.InnerHtml);
 
                 // Now search table in new document
-                var friendsA = 
+                var friendsA =
                     hDoc.DocumentNode.SelectNodes("//table[@role='presentation']/tr/td[2]/a") ??
                     hDoc.DocumentNode.SelectNodes("//table[@role='presentation']/tbody/tr/td[2]/a");
                 if (friendsA == null) return friends;
@@ -580,11 +604,10 @@ namespace Mmosoft.Facebook.Sdk
                     {
                         // if href does not contain "profile.php" mean we get user alias
                         if (!userProfileHref.Contains("profile.php"))
-                        {
-                            // Get userid from user alias
-                            // In this case we just need user id so 
+                        {                            
+                            // In this case we just need user alias so
                             // i don't pass addition info etc : includeUserAbout and includeFriends
-                            // https://m.facebook.com:443//hoanghienson.tung?fref=fr_tab&amp;refid=17/about
+                            // https://m.facebook.com:443/hoanghienson.tung?fref=fr_tab&amp;refid=17/about
                             int questionMarkIndex = userProfileHref.IndexOf("?");
                             if (questionMarkIndex > -1)
                             {
@@ -593,16 +616,10 @@ namespace Mmosoft.Facebook.Sdk
                             else
                             {
                                 userProfileHref = userProfileHref.Substring(1);
-                            }                            
-                            id = GetUserInfo(userProfileHref)._id;
-                            if (!string.IsNullOrWhiteSpace(id))
-                            {
-                                friends.Add(id);
                             }
-                            else
-                            {
-                                log.WriteL("Could not find id from this alias : " + userProfileHref);
-                            }
+
+                            // adding user alias to friend tab
+                            friends.Add(userProfileHref);                            
                         }
                         else
                         {
@@ -614,7 +631,7 @@ namespace Mmosoft.Facebook.Sdk
                             }
                             else
                             {
-                                log.WriteL("Match user id by CompiledRegex.GetUserIdFromRawProfileUrl() fail. Addition info : url is " + firstFriendPageUrl + " and user profile is " + userProfileHref);
+                                _log.WriteL("Match user id by CompiledRegex.GetUserIdFromRawProfileUrl() fail. Addition info : url is " + firstFriendPageUrl + " and user profile is " + userProfileHref);
                             }
                         }
                     }
@@ -626,19 +643,19 @@ namespace Mmosoft.Facebook.Sdk
                         // - we need provide more pattern to detect user id
 
                         // now i will log it for later fix
-                        log.WriteL("Could not detect user id. " + userProfileHref);
+                        _log.WriteL("Maybe " + friendA?.InnerText + " has been banned.");
                     }
                 }
 
                 // using queue to remove recursive
-                var nextUrl = rootNode.SelectSingleNode("//div[@id='m_more_friends']/a")?.Attributes["href"]?.Value;
+                var nextUrl = WebUtility.HtmlDecode(rootNode.SelectSingleNode("//div[@id='m_more_friends']/a")?.Attributes["href"]?.Value);
                 if (nextUrl != null && nextUrl.Length != 0)
                 {
                     friendPages.Enqueue("https://m.facebook.com" + nextUrl);
                 }
                 else
                 {
-                    log.WriteL("Maybe we reach to the last page or we need to review xpath again :S");
+                    _log.WriteL("End page.");
                 }
             }
 
@@ -653,7 +670,7 @@ namespace Mmosoft.Facebook.Sdk
         /// <returns>Group Info object</returns>
         public GroupInfo GetGroupInfo(string groupId)
         {
-            var documentNode = SynchronousHttp.LoadDom("https://m.facebook.com/groups/" + groupId + "?view=info", ref cookies);
+            var documentNode = _http.LoadDom("https://m.facebook.com/groups/" + groupId + "?view=info", ref _cookie);
             var groupNameNode = documentNode.SelectSingleNode("/html/body/div/div/div[2]/div/div[1]/div[2]/table/tbody/tr/td[1]/a/table/tbody/tr/td[2]/h3");
             var groupInfo = new GroupInfo
             {
@@ -675,7 +692,7 @@ namespace Mmosoft.Facebook.Sdk
             var groupMembers = new List<GroupMember>();
 
             var groupMemberUrl = "https://m.facebook.com/browse/group/members/?id=" + groupId + "&start=" + page + "&listType=list_nonfriend";
-            var memberNodes = SynchronousHttp.LoadDom(groupMemberUrl, ref cookies).SelectNodes("/html/body/div/div/div[2]/div/div[1]/div/table");
+            var memberNodes = _http.LoadDom(groupMemberUrl, ref _cookie).SelectNodes("/html/body/div/div/div[2]/div/div[1]/div/table");
             if (memberNodes.Count == 0) return groupMembers;
 
             foreach (var memberNode in memberNodes)
@@ -723,7 +740,7 @@ namespace Mmosoft.Facebook.Sdk
                 throw new ArgumentException("can not detect page id of " + pageIdOrAlias);
             }
 
-            var htmlNode = SynchronousHttp.LoadDom("https://m.facebook.com/page/reviews.php?id=" + pageIdOrAlias, ref cookies);
+            var htmlNode = _http.LoadDom("https://m.facebook.com/page/reviews.php?id=" + pageIdOrAlias, ref _cookie);
 
             if (GlobalData.PageNotFound.Any(text => htmlNode.InnerHtml.Contains(text)))
             {
@@ -767,7 +784,7 @@ namespace Mmosoft.Facebook.Sdk
                 var rateContentAnchorLink = reviewNode.SelectSingleNode("div/div/div[2]/div/div[1]/a[2]")?.GetAttributeValue("href", string.Empty);
 
                 // Request to get fully rate content
-                var htmlRateContentNode = SynchronousHttp.LoadDom("https://m.facebook.com" + rateContentAnchorLink, ref cookies);
+                var htmlRateContentNode = _http.LoadDom("https://m.facebook.com" + rateContentAnchorLink, ref _cookie);
 
                 reviewInfo.Content = htmlRateContentNode.SelectSingleNode("html/body/div/div/div[2]/div/div[1]/div/div[1]/div/div[1]/div[2]/p")?.InnerText;
 
@@ -786,7 +803,7 @@ namespace Mmosoft.Facebook.Sdk
         {
             var pageId = string.Empty;
 
-            var htmlNode = SynchronousHttp.LoadDom("https://m.facebook.com/" + pageAlias, ref cookies);
+            var htmlNode = _http.LoadDom("https://m.facebook.com/" + pageAlias, ref _cookie);
             var pagesMbasicContextItemsId = htmlNode.SelectSingleNode("//div[@id='pages_mbasic_context_items_id']");
             if (pagesMbasicContextItemsId != null)
             {
@@ -818,10 +835,10 @@ namespace Mmosoft.Facebook.Sdk
         /// </summary>
         public void Dispose()
         {
-            if (log != null)
+            if (_log != null)
             {
-                log.Dispose();
-            }                
+                _log.Dispose();
+            }
         }
     }
 }
