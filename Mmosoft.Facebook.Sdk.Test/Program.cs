@@ -3,14 +3,17 @@ using System.Text;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
-using Mmosoft.Facebook.Sdk.Common;
+
+using Mmosoft.Facebook.Sdk;
+using Moq;
+using NUnit.Framework;
 
 namespace Mmosoft.Facebook.Sdk.Test
 {
     class Program
     {
-        public static string UserId = "coraulo@yahoo.com";
-        public static string Password = "123asd456";
+        public static string UserId = "your email";
+        public static string Password = "your password";
 
         public static void Main()
         {
@@ -44,7 +47,6 @@ namespace Mmosoft.Facebook.Sdk.Test
                 Console.WriteLine("TargetSite : " + ex.TargetSite);
                 Console.WriteLine("Source : " + ex.Source);
             }
-
         }
 
         public static void LeaveGroupTest()
@@ -119,7 +121,7 @@ namespace Mmosoft.Facebook.Sdk.Test
             try
             {
                 var fc = new FacebookClient(UserId, Password);
-                var reviewInfo = fc.GetReviewInfo("ArduinoCommunityVN");
+                var reviewInfo = fc.GetPageReviewInfo("ArduinoCommunityVN");
                 Console.WriteLine("page id :" + reviewInfo.PageId);
                 foreach (var item in reviewInfo.Reviews)
                 {
@@ -151,7 +153,7 @@ namespace Mmosoft.Facebook.Sdk.Test
                 // Open bracket
                 result.Append("{");
                 // append id
-                result.Append("\"id\" : \"" + friends._id + "\"");
+                result.Append("\"id\" : \"" + friends.Id + "\"");
                 // append friends
                 if (friends.Friends != null)
                 {

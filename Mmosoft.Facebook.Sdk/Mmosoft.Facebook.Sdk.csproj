@@ -44,7 +44,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Mmosoft.Facebook.Sdk.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
@@ -64,22 +65,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\SynchronousHttp.cs" />
-    <Compile Include="Common\CompiledRegex.cs" />
-    <Compile Include="Common\Http.cs" />
-    <Compile Include="Common\GlobalizationData.cs" />
-    <Compile Include="Common\ILog.cs" />
-    <Compile Include="FacebookAccount.cs" />
+    <Compile Include="Utilities\CompiledRegex.cs" />
+    <Compile Include="Utilities\HtmlHelper.cs" />
+    <Compile Include="Utilities\FacebookClientErrors.cs" />
+    <Compile Include="Utilities\HttpHandler.cs" />
+    <Compile Include="Utilities\FacebookConstantString.cs" />
+    <Compile Include="Utilities\ILogger.cs" />
     <Compile Include="Models\UserInfo.cs" />
-    <Compile Include="Exceptions\MissingReviewPageException.cs" />
+    <Compile Include="Exceptions\ReviewPageNotFoundException.cs" />
     <Compile Include="Exceptions\LogOnFailureException.cs" />
     <Compile Include="Models\GroupInfo.cs" />
     <Compile Include="FacebookClient.cs" />
-    <Compile Include="Models\ReviewInfo.cs" />
+    <Compile Include="Models\PageReviewInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Mmosoft.Facebook.Sdk.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

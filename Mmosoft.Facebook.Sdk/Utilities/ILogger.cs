@@ -1,15 +1,15 @@
 ﻿using System;
 using System.IO;
 
-namespace Mmosoft.Facebook.Sdk.Common
+namespace Mmosoft.Facebook.Sdk.Utilities
 {
-    public interface ILog : IDisposable
+    public interface ILogger : IDisposable
     {
         void Write(string log);
-        void WriteL(string log);
+        void WriteLine(string log);
     }
 
-    public class ConsoleLog : ILog
+    public class SimpleConsoleLogger : ILogger
     {
         public void Dispose()
         {
@@ -21,17 +21,17 @@ namespace Mmosoft.Facebook.Sdk.Common
             Console.Write(log);
         }
 
-        public void WriteL(string log)
+        public void WriteLine(string log)
         {
             Console.WriteLine(log);
         }
     }
 
-    public class FileLog : ILog
+    public class SimpleFileLogger : ILogger
     {
         private StreamWriter writer;
 
-        public FileLog()
+        public SimpleFileLogger()
         {
             string dataPath = System.Configuration.ConfigurationManager.AppSettings["dataPath"];
             writer = File.AppendText(dataPath);
@@ -50,9 +50,25 @@ namespace Mmosoft.Facebook.Sdk.Common
             writer.Write(log);
         }
 
-        public void WriteL(string log)
+        public void WriteLine(string log)
         {
             writer.WriteLine(log);
         }
     }
+
+    public class NullLoggger : ILogger
+    {
+        public void Write(string log)
+        {            
+        }
+
+        public void WriteLine(string log)
+        {         
+        }
+
+        public void Dispose()
+        {         
+        }
+    }
+
 }
