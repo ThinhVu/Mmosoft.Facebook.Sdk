@@ -5,5 +5,5 @@
 # Output
 Mmosoft.Facebook.Sdk/bin*
 Mmosoft.Facebook.Sdk/obj*
-Mmosoft.Facebook.Sdk.Test/bin*
-Mmosoft.Facebook.Sdk.Test/obj*
+Mmosoft.Facebook.Sdk.Examples/bin*
+Mmosoft.Facebook.Sdk.Examples/obj*
