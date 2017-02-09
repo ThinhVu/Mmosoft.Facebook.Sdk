@@ -104,25 +104,17 @@ namespace Mmosoft.Facebook.Sdk
         /// <returns></returns>
         bool JoinCancelJoinGroup(string groupId, string action)
         {
-            HtmlNodeCollection forms = this.BuildDom("https://m.facebook.com/groups/" + groupId)
-                .SelectNodes("//form");
-
-            foreach (var form in forms)
+            HtmlNode form = this.BuildDom("https://m.facebook.com/groups/" + groupId)
+                .SelectSingleNode("//form[contains(@action, '/a/group/')]");
+            if (form == null) return false;
+            string actionUrlPath = form.GetAttributeValue("action", null);
+            if (actionUrlPath == null) return false;
+            string payload = HtmlHelper.BuildPayload(form.ParentNode.Elements("input"), null);
+            using (var response = _http.SendPostRequest("https://m.facebook.com" + actionUrlPath, payload))
             {
-                string actionUrlPath = form.GetAttributeValue("action", null);
-                if (actionUrlPath == null) continue;
-                if (actionUrlPath.StartsWith("/a/group/" + action))
-                {
-                    string payload = HtmlHelper.BuildPayload(form.ParentNode.Elements("input"), null);
-                    using (var response = _http.SendPostRequest("https://m.facebook.com" + actionUrlPath, payload))
-                    {
-                        // TODO (ThinhVu) : Check again
-                        return true;
-                    }
-                }
+                // TODO (ThinhVu) : Check again
+                return true;
             }
-
-            return false;
         }
         /// <summary>
         /// Leave group
@@ -193,19 +185,15 @@ namespace Mmosoft.Facebook.Sdk
         /// <exception cref="NodeNotFoundException">Exception when select DOM query fail</exception>
         /// <returns>Group Info object</returns>
         public GroupInfo GetGroupInfo(string groupId)
-        {
-            string groupInfoUrl = "https://m.facebook.com/groups/" + groupId + "?view=info";
-            string groupInfoXPath = "/html/body/div/div/div[2]/div/div[1]/div[2]/table/tbody/tr/td[1]/a/table/tbody/tr/td[2]/h3";
-
-            HtmlNode docNode = this.BuildDom(groupInfoUrl);
-            HtmlNode groupNameNode = docNode.SelectSingleNode(groupInfoXPath);
-
+        {            
+            HtmlNode docNode = this.BuildDom("https://m.facebook.com/groups/" + groupId + "?view=info");
+            HtmlNode groupNameNode = docNode.SelectSingleNode("//a[@href='#groupMenuBottom']").SelectSingleNode("//h3");
+            if (groupNameNode == null) return null;
             var groupInfo = new GroupInfo
             {
                 Id = groupId,
-                Name = groupNameNode.InnerText
+                Name = WebUtility.HtmlDecode(groupNameNode.InnerText)
             };
-
             groupInfo.Members.AddRange(GetGroupMembers(groupId, 0));
 
             return groupInfo;
@@ -303,7 +291,7 @@ namespace Mmosoft.Facebook.Sdk
                 pageId = GetPageId(pageIdOrAlias);
 
             if (pageId.Length == 0)
-                throw new ArgumentException("can not detect page id of " + pageIdOrAlias);
+                throw new ArgumentException("Can not detect page id of " + pageIdOrAlias);
 
             HtmlNode htmlNode = this.BuildDom("https://m.facebook.com/page/reviews.php?id=" + pageIdOrAlias);
 
@@ -311,6 +299,7 @@ namespace Mmosoft.Facebook.Sdk
                 throw new ReviewPageNotFoundException(pageIdOrAlias + " not contains review page");
 
             // get review nodes -- review node contain user's review
+            // TODO : Replace with more safely xpath
             HtmlNodeCollection reviewNodes = htmlNode.SelectNodes("/html/body/div/div/div[2]/div[2]/div[1]/div/div[3]/div/div/div/div");
 
             // Create page review
@@ -360,6 +349,7 @@ namespace Mmosoft.Facebook.Sdk
                     if (rateContentAnchorLink != null)
                     {
                         HtmlNode htmlRateContentNode = this.BuildDom("https://m.facebook.com" + rateContentAnchorLink);
+                        // TODO : Replace with more safely
                         HtmlNode contentNode = htmlRateContentNode.SelectSingleNode("html/body/div/div/div[2]/div/div[1]/div/div[1]/div/div[1]/div[2]/p");
 
                         if (contentNode != null)
@@ -713,7 +703,43 @@ namespace Mmosoft.Facebook.Sdk
 
             return friends;
         }
-
+        /// <summary>
+        /// Post message to targetId
+        /// </summary>
+        /// <param name="message">Content you want to post</param>
+        /// <param name="targetId">Target id is group or wall</param>                      
+        bool Post(string message, string targetId)
+        {
+            var loadDomUrl = string.Empty;
+            switch (targetId)
+            {
+                case "":
+                    // Post wall
+                    loadDomUrl = "https://m.facebook.com/";
+                    break;
+                default:
+                    // post to group
+                    loadDomUrl = "https://m.facebook.com/groups/" + targetId;
+                    break;
+            }
+            HtmlNode document = this.BuildDom(loadDomUrl);
+            HtmlNode postForm = document.SelectSingleNode("//form[contains(@action, '/composer')]");
+            if (postForm != null)
+            {
+                IEnumerable<HtmlNode> inputs = postForm.ParentNode.Elements("input");
+                string payload = HtmlHelper.BuildPayload(inputs, "view_post=Post&xc_message=" + message);
+                string actionUrl = postForm.GetAttributeValue("action", null);
+                if (actionUrl == null) return false;
+                using (var joinGroup = _http.SendPostRequest("https://m.facebook.com" + actionUrl, payload))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
         // ---------- Dispose -------- //
         /// <summary>
         /// Dispose
@@ -724,45 +750,7 @@ namespace Mmosoft.Facebook.Sdk
             {
                 _logger.Dispose();
             }
-        }
-
-        // ----------- Private method --------- /
-        /// <summary>
-        /// Post message to targetId
-        /// </summary>
-        /// <param name="message">Content you want to post</param>
-        /// <param name="targetId">Target id is group or wall</param>                      
-        void Post(string message, string targetId)
-        {
-            var loadDomUrl = string.Empty;
-            var postFormXPath = string.Empty;
-
-            switch (targetId)
-            {
-                case "":
-                    // Post wall
-                    loadDomUrl = "https://m.facebook.com/";
-                    postFormXPath = "/html/body/div/div/div[2]/div/div[2]/div/form";
-                    break;
-                default:
-                    // post to group
-                    loadDomUrl = "https://m.facebook.com/groups/" + targetId;
-                    postFormXPath = "/html/body/div/div/div[2]/div/div[1]/div[3]/form";
-                    break;
-            }
-
-            // load html node
-            HtmlNode document = this.BuildDom(loadDomUrl);
-
-            HtmlNode postForm = document.SelectSingleNode(postFormXPath);
-            IEnumerable<HtmlNode> inputs = postForm.ParentNode.Elements("input");
-
-            string payload = HtmlHelper.BuildPayload(inputs, "view_post=Post&xc_message=" + message);
-            string actionUrl = postForm.GetAttributeValue("action", null);
-
-            if (actionUrl != null)
-                using (var joinGroup = _http.SendPostRequest("https://m.facebook.com" + actionUrl, payload)) { }
-        }
+        }        
         /// <summary>
         /// Download content from url and build DOM from it.
         /// </summary>
