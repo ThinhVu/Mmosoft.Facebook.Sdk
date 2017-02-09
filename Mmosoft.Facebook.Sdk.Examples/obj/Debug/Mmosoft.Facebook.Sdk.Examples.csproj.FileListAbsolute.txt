@@ -1,0 +1,4 @@
+E:\Code\Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.Examples\bin\Debug\ExecutableProgram.exe.config
+E:\Code\Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.Examples\obj\Debug\ExecutableProgram.exe
+E:\Code\Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.Examples\obj\Debug\ExecutableProgram.pdb
+E:\Code\Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.Examples\bin\Debug\Mmosoft.Facebook.Sdk.Examples.exe.config

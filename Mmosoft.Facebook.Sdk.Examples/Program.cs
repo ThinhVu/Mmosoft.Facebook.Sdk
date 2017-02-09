@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mmosoft.Facebook.Sdk;
 
-namespace ExecutableProgram
+namespace Mmosoft.Facebook.Sdk.Examples
 {
     class Program
     {

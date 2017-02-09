@@ -7,8 +7,8 @@
     <ProjectGuid>{668F7902-CB61-4551-BAD5-3493C8FFD28E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ExecutableProgram</RootNamespace>
-    <AssemblyName>ExecutableProgram</AssemblyName>
+    <RootNamespace>Mmosoft.Facebook.Sdk.Examples</RootNamespace>
+    <AssemblyName>Mmosoft.Facebook.Sdk.Examples</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Mmosoft.Facebook.Sdk.Examples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
