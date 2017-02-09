@@ -13,4 +13,5 @@ Current support :
 - Get page id from page alias.
 
 # Example
-For example, see Mmosoft.Facebook.Sdk.Test/Program.cs
+For example, see Mmosoft.Facebook.Sdk.Examples/Program.cs
+This just contain some simple methods. Let's explore it.
