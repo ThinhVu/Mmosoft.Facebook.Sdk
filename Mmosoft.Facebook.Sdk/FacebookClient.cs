@@ -727,7 +727,7 @@ namespace Mmosoft.Facebook.Sdk
             if (postForm != null)
             {
                 IEnumerable<HtmlNode> inputs = postForm.ParentNode.Elements("input");
-                string payload = HtmlHelper.BuildPayload(inputs, "view_post=Post&xc_message=" + message);
+                string payload = HtmlHelper.BuildPayload(inputs, "view_post=Post&xc_message=" + Uri.EscapeDataString(message));
                 string actionUrl = postForm.GetAttributeValue("action", null);
                 if (actionUrl == null) return false;
                 using (var joinGroup = _http.SendPostRequest("https://m.facebook.com" + actionUrl, payload))
