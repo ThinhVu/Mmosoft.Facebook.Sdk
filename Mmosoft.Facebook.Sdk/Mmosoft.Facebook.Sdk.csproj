@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\UserGroup.cs" />
     <Compile Include="Utilities\CompiledRegex.cs" />
     <Compile Include="Utilities\HtmlHelper.cs" />
     <Compile Include="Utilities\FacebookClientErrors.cs" />

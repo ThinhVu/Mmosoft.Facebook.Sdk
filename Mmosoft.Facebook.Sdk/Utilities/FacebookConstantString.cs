@@ -10,6 +10,7 @@
         public const string AddProfilePicture = "Add Profile Picture";
         public const string IsGroupAdmin = "Admin";
         public const string PageNotFound = "The page you requested cannot be displayed right now.";
-        public const string Like = "Like";      
+        public const string Like = "Like";
+        public const string GroupYouAreIn = "Groups You Are In";
     }       
 }

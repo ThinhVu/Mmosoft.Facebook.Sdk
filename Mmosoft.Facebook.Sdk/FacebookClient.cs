@@ -241,6 +241,43 @@ namespace Mmosoft.Facebook.Sdk
             return groupMembers;
         }
 
+        /// <summary>
+        /// Get groups which user has joined in
+        /// At the moment, this method just get first page of all page (if user join so much group)
+        /// Base on my code, you can fix it for your use. Sorry for that inconvenience
+        /// </summary>
+        /// <returns></returns>
+        public List<UserGroup> GetUserGroups()
+        {
+            var xpath = string.Format("//div/h3[.='{0}']", Utilities.ConstString.GroupYouAreIn);
+            var userGroups = new List<UserGroup>();
+            var header = BuildDom("https://m.facebook.com/groups/?seemore").SelectSingleNode(xpath);
+            var groupUl = header.NextSibling;
+            foreach (var li in groupUl.SelectNodes("li"))
+            {
+                var userGroup = GetUserGroupFrom(li);
+                if (userGroup != null)
+                    userGroups.Add(userGroup);
+            }
+            return userGroups;
+        }
+        private UserGroup GetUserGroupFrom(HtmlNode liNode)
+        {
+            UserGroup userGroup = null;
+            var aTag = liNode.SelectSingleNode("./table/tbody/tr/td/a");            
+            if (aTag != null)
+            {
+                userGroup = new UserGroup();
+                userGroup.Name = WebUtility.HtmlDecode(aTag.InnerText);
+                userGroup.Link = RemoveQueryString(aTag.GetAttributeValue("href", ""));
+            }
+            return userGroup;
+        }
+        private string RemoveQueryString(string link)
+        {
+            return link.Substring(0, link.IndexOf('?'));
+        }
+
         // ----------- Page ----------- //
         /// <summary>
         /// Send request to like or dislike target page
