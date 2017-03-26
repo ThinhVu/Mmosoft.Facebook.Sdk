@@ -111,8 +111,7 @@ namespace Mmosoft.Facebook.Sdk
             if (actionUrlPath == null) return false;
             string payload = HtmlHelper.BuildPayload(form.ParentNode.Elements("input"), null);
             using (var response = _http.SendPostRequest("https://m.facebook.com" + actionUrlPath, payload))
-            {
-                // TODO (ThinhVu) : Check again
+            {                
                 return true;
             }
         }

@@ -96,7 +96,7 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         /// <returns>A System.Net.HttpWebResponse for the specified uri scheme</returns>
         public virtual HttpWebResponse SendPostRequest(string requestUrl, string content)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(content);
+            byte[] buffer = Encoding.Unicode.GetBytes(content);
 
             var postRequest = MakePostRequest(new Uri(requestUrl), buffer);
 

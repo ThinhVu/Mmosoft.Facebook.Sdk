@@ -1,6 +1,6 @@
 # Visual studio
-/.vs
-/.suo
+/*.vs
+/*.suo
 
 # Output
 Mmosoft.Facebook.Sdk.Examples/bin*
