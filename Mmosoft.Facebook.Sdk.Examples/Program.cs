@@ -12,11 +12,29 @@ namespace Mmosoft.Facebook.Sdk.Examples
         static void Main(string[] args)
         {
             // Define fb client
-            var fb = new FacebookClient(user: "your user", password: "your password");
+            var fb = new FacebookClient(user: "", password: "");
             // And invoke method
             //fb.PostToWall("Send from Facebook SDK");
             //fb.PostToGroup("Send from Facebook SDK-Group", "529073513939720");        
-            var g = fb.GetUserGroups();
+            var g = fb.GetJoinedGroups();
+
+            var someone = fb.GetUserInfo("beciuu94", new Models.User.UserInfoOption
+            {
+                FbInfoOption = new Models.User.FacebookInfoOption
+                {
+                    IncludeAvatarUrl = true,
+                    IncludeFbFriends = true,
+                    IncludeFbUrl = true,
+                    IncludeUserDisplayName = true,
+                    IncludeUserId = true
+                },
+                IncludeAddressInfo = true,
+                IncludeBasicInfo = true,
+                IncludeContactInfo = false,
+                IncludeEduInfo = false,
+                IncludeRelationshipInfo = false,
+                IncludeWorkInfo = false
+            });
 
             Console.WriteLine();
         }

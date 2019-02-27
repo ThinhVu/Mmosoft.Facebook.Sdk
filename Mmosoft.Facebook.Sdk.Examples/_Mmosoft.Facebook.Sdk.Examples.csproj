@@ -52,8 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.csproj">
-      <Project>{247bfe1d-3016-4a3f-8891-704540c903fc}</Project>
+      <Project>{9409632c-c07f-439a-84b5-40495f6738ca}</Project>
       <Name>Mmosoft.Facebook.Sdk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mmosoft.Facebook.Utils\Mmosoft.Facebook.Utils.csproj">
+      <Project>{e24c075b-981c-4f44-aa3d-6bf6bc55f01a}</Project>
+      <Name>Mmosoft.Facebook.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

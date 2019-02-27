@@ -3,7 +3,5 @@
 /*.suo
 
 # Output
-Mmosoft.Facebook.Sdk.Examples/bin*
-Mmosoft.Facebook.Sdk.Examples/obj*
-Mmosoft.Facebook.Sdk/bin*
-Mmosoft.Facebook.Sdk/obj*
+**/bin/**
+**/obj/**

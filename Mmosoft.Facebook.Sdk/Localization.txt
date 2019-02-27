@@ -1,0 +1,26 @@
+﻿// This is comment
+// Key,Value 
+// Key should keep the same for all language version
+// Value will be change depend on language of credential supplied to Facebook client
+//
+// Because this is En language so you will see Key and Value dupplicate
+// 
+EditProfilePicture,Edit Profile Picture
+AddProfilePicture,Add Profile Picture
+IsGroupAdmin,Admin
+PageNotFound,The page you requested cannot be displayed right now
+Like,Like
+GroupYouAreIn,Groups you are in
+TimeLine,TimeLine
+Friends,Friends
+Photos,Photos
+Likes,Likes
+Followers,Followers
+Following,Following
+Activity Log,Activity Log
+Add Friend,Add Friend
+Message,Message
+Follow,Follow
+More,More
+Current City,Current City
+Hometown,Home Town

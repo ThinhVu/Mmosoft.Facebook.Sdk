@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mmosoft.Facebook.Sdk.Models
+namespace Mmosoft.Facebook.Sdk.Models.User
 {
     public class UserGroup
     {

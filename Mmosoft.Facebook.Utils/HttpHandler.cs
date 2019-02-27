@@ -3,8 +3,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Threading;
 
-namespace Mmosoft.Facebook.Sdk.Utilities
+namespace Mmosoft.Facebook.Utils
 {
     public class HttpHandler
     {
@@ -19,56 +20,57 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         public virtual string UserAgent { get; set; }
 
         /// <summary>
+        /// Allow request delay request
+        /// </summary>
+        public bool DelayRequest { get; set; }
+        public int DelaySeconds { get; set; }
+
+        /// <summary>
+        /// Store last request time
+        /// </summary>
+        private DateTime _lastRequest { get; set; }
+
+        /// <summary>
         /// Initialize new instance of BaseHttp request with default user agent
         /// </summary>
         public HttpHandler()
+            : this("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0")
         {
+            DelaySeconds = 5;
             CookieContainer = new CookieContainer();
-            
-            // default user-agent
-            // TODO (ThinhVu) : Fix hard-coded user agent
-            UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0";
         }
 
         /// <summary>
         /// Initialize new instance of BaseHttp request.
         /// </summary>
         /// <param name="userAgent">User agent</param>
-        public HttpHandler(string userAgent) 
-            : this()
+        public HttpHandler(string userAgent)
         {
             UserAgent = userAgent;
         }
 
-       
         /// <summary>
-        /// Make GET request
+        /// Make GET request but not send
         /// </summary>
         /// <param name="requestUri"></param>
         /// <returns></returns>
-        public virtual HttpWebRequest MakeGetRequest(Uri requestUri)
+        public virtual HttpWebRequest CreateGETRequest(Uri requestUri)
         {
-            var request = this.CreateRequest(requestUri);
-
-            request.Method = WebRequestMethods.Http.Get;
-
-            return request;
+            return this.createRawRequest(requestUri, WebRequestMethods.Http.Get);
         }
 
         /// <summary>
-        /// Make POST request
+        /// Make POST request but not send
         /// </summary>
         /// <param name="requestUri"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        public virtual HttpWebRequest MakePostRequest(Uri requestUri, byte[] content)
+        public virtual HttpWebRequest CreatePOSTRequest(Uri requestUri, byte[] content)
         {
-            var request = this.CreateRequest(requestUri);
-
-            request.Method = WebRequestMethods.Http.Post;
+            var request = this.createRawRequest(requestUri, WebRequestMethods.Http.Post);
+            // set content
             request.ContentLength = content.Length;
             request.ContentType = "application/x-www-form-urlencoded";
-
             return request;
         }
 
@@ -78,12 +80,14 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         /// <param name="requestUri">A string containing the URI of the requested resource</param>
         /// <param name="cookies">A System.Net.CookieContainer containing cookies for this request</param>        
         /// <returns>A System.Net.HttpWebResponse for the specified uri scheme</returns>
-        public virtual HttpWebResponse SendGetRequest(string requestUrl)
+        public virtual HttpWebResponse SendGETRequest(string requestUrl)
         {
-            var response = MakeGetRequest(new Uri(requestUrl)).GetResponse() as HttpWebResponse;
-
-            this.StoreCookie(response.Cookies);
-
+            this.waitForNextRequest();
+            var uri = new Uri(requestUrl);
+            var request = this.CreateGETRequest(uri);
+            var response = request.GetResponse() as HttpWebResponse;
+            this.storeCookie(response.Cookies);
+            this._lastRequest = DateTime.Now;
             return response;
         }
 
@@ -94,20 +98,21 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         /// <param name="content">A System.String containing the content to send</param>
         /// <param name="cookies">A System.Net.CookieContainer containing cookies for this request</param>        
         /// <returns>A System.Net.HttpWebResponse for the specified uri scheme</returns>
-        public virtual HttpWebResponse SendPostRequest(string requestUrl, string content)
+        public virtual HttpWebResponse SendPOSTRequest(string requestUrl, string content)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(content);
-
-            var postRequest = MakePostRequest(new Uri(requestUrl), buffer);
-
+            this.waitForNextRequest();
+            byte[] buffer = Encoding.UTF8.GetBytes(content);
+            var postRequest = this.CreatePOSTRequest(new Uri(requestUrl), buffer);
             using (var postRequestStream = postRequest.GetRequestStream())
                 postRequestStream.Write(buffer, 0, buffer.Length);
-
             var response = postRequest.GetResponse() as HttpWebResponse;
 
-            this.StoreCookie(response.Cookies);
+            // Store cookie
+            this.storeCookie(response.Cookies);
+            // set last request
+            this._lastRequest = DateTime.Now;
 
-            return response;
+            return response;          
         }
 
         /// <summary>
@@ -117,12 +122,41 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         /// <returns></returns>
         public virtual string DownloadContent(string requestUrl)
         {
-            // cause Accept-Encoding allow gzip so request use gzip stream to decompress content.
-            using (var response = this.SendGetRequest(requestUrl))
-            using (var responseStreamReader = new StreamReader(new GZipStream(response.GetResponseStream(), CompressionMode.Decompress)))
+            using (var response = this.SendGETRequest(requestUrl))
             {
-                return responseStreamReader.ReadToEnd();
+                var contentEncoding = response.Headers["content-encoding"];
+                if (contentEncoding != null && contentEncoding.Contains("gzip")) // cause httphandler only request gzip
+                {
+                    // using gzip stream reader
+                    using (var responseStreamReader = new StreamReader(new GZipStream(response.GetResponseStream(), CompressionMode.Decompress)))
+                    {
+                        return responseStreamReader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    // using ordinary stream reader
+                    using (var responseStreamReader = new StreamReader(response.GetResponseStream()))
+                    {
+                        return responseStreamReader.ReadToEnd();
+                    }
+                }
             }
+        }
+
+        /// <summary>
+        /// Redirect request process
+        /// </summary>
+        /// <param name="location">target location</param>
+        /// <returns>HttpWebResponse instance</returns>
+        private HttpWebResponse redirectRequestProcess(string location)
+        {
+            // Redirect and disable delay request to send request immediate
+            var dl = DelayRequest;
+            DelayRequest = false;
+            var response = SendGETRequest(location);
+            DelayRequest = dl;
+            return response;
         }
 
         /// <summary>
@@ -131,10 +165,9 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         /// <param name="requestUri">A System.Uri containing the URI of the requested resource</param>
         /// <param name="cookieContainer">A System.Net.CookieContainer containing cookies for this request</param>              
         /// <returns>A System.Net.HttpWebRequest for the specified URI scheme.</returns>
-        HttpWebRequest CreateRequest(Uri requestUri)
+        private HttpWebRequest createRawRequest(Uri requestUri, string method)
         {
             var request = WebRequest.Create(requestUri) as HttpWebRequest;
-
             request.Accept = "*/*";
             request.AllowAutoRedirect = false;
             request.CookieContainer = this.CookieContainer;
@@ -142,10 +175,10 @@ namespace Mmosoft.Facebook.Sdk.Utilities
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Host = requestUri.Host + ":" + requestUri.Port;
             request.KeepAlive = true;
+            request.Method = method;
             request.ProtocolVersion = HttpVersion.Version11;
             request.ServicePoint.Expect100Continue = false;
             request.UserAgent = this.UserAgent;
-
             return request;
         }
 
@@ -153,10 +186,22 @@ namespace Mmosoft.Facebook.Sdk.Utilities
         /// Store new cookie to cookie containter
         /// </summary>
         /// <param name="cookies"></param>
-        void StoreCookie(CookieCollection cookies)
+        private void storeCookie(CookieCollection cookies)
         {
             if (cookies != null && cookies.Count > 0)
                 this.CookieContainer.Add(cookies);
         }
-    }   
+
+        /// <summary>
+        /// Delay request
+        /// </summary>
+        private void waitForNextRequest()
+        {
+            while (DelayRequest && this._lastRequest.AddSeconds(this.DelaySeconds) > DateTime.Now)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+    }
+
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmosoft.Facebook.Sdk.Models
+namespace Mmosoft.Facebook.Sdk.Models.Page
 {
     public class PageReviewInfo
     {
