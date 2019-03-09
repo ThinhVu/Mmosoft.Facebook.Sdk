@@ -6,4 +6,12 @@
     {
         void WriteLine(string message);
     }
+
+    public static class LogCreator
+    {
+        public static ILogger Create()
+        {
+            return new FileLogger();
+        }
+    }
 }

@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_Mmosoft.Facebook.Sdk.Examp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Facebook.Sdk", "Mmosoft.Facebook.Sdk\Mmosoft.Facebook.Sdk.csproj", "{9409632C-C07F-439A-84B5-40495F6738CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmosoft.Facebook.Utils", "Mmosoft.Facebook.Utils\Mmosoft.Facebook.Utils.csproj", "{E24C075B-981C-4F44-AA3D-6BF6BC55F01A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,10 +19,6 @@ Global
 		{9409632C-C07F-439A-84B5-40495F6738CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9409632C-C07F-439A-84B5-40495F6738CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9409632C-C07F-439A-84B5-40495F6738CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E24C075B-981C-4F44-AA3D-6BF6BC55F01A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E24C075B-981C-4F44-AA3D-6BF6BC55F01A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E24C075B-981C-4F44-AA3D-6BF6BC55F01A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E24C075B-981C-4F44-AA3D-6BF6BC55F01A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

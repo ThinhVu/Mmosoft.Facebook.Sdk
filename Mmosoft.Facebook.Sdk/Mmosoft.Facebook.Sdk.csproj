@@ -64,31 +64,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Group\GroupMember.cs" />
-    <Compile Include="Models\User\AddressInfo.cs" />
-    <Compile Include="Models\User\BasicInfo.cs" />
-    <Compile Include="Models\User\ContactInfo.cs" />
-    <Compile Include="Models\User\EducationInfo.cs" />
-    <Compile Include="Models\User\FacebookInfo.cs" />
-    <Compile Include="Models\User\RelationshipInfo.cs" />
-    <Compile Include="Models\User\Option.cs" />
-    <Compile Include="Models\User\UserGroup.cs" />
-    <Compile Include="Models\User\WorkInfo.cs" />
+    <Compile Include="Group\GroupEndpoint.cs" />
+    <Compile Include="Page\PageEndpoint.cs" />
+    <Compile Include="User\UserEndpoint.cs" />
+    <Compile Include="Group\Model\GroupMember.cs" />
+    <Compile Include="Page\Model\PageAlbumImageModel.cs" />
+    <Compile Include="Page\Model\PageAlbumModel.cs" />
+    <Compile Include="User\Model\AddressInfo.cs" />
+    <Compile Include="User\Model\BasicInfo.cs" />
+    <Compile Include="User\Model\ContactInfo.cs" />
+    <Compile Include="User\Model\EducationInfo.cs" />
+    <Compile Include="User\Model\FacebookInfo.cs" />
+    <Compile Include="User\Model\RelationshipInfo.cs" />
+    <Compile Include="User\Model\Option.cs" />
+    <Compile Include="User\Model\UserGroup.cs" />
+    <Compile Include="User\Model\WorkInfo.cs" />
     <Compile Include="CompiledRegex.cs" />
     <Compile Include="Localization.cs" />
-    <Compile Include="Models\User\UserInfo.cs" />
-    <Compile Include="Exceptions\PageNotFoundException.cs" />
-    <Compile Include="Exceptions\UnAuthorizedException.cs" />
-    <Compile Include="Models\Group\GroupInfo.cs" />
-    <Compile Include="FacebookClient.cs" />
-    <Compile Include="Models\Page\PageReviewInfo.cs" />
+    <Compile Include="User\Model\UserInfo.cs" />
+    <Compile Include="Group\Model\GroupInfo.cs" />
+    <Compile Include="FbCredential.cs" />
+    <Compile Include="Page\Model\PageReviewInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mmosoft.Facebook.Utils\Mmosoft.Facebook.Utils.csproj">
-      <Project>{e24c075b-981c-4f44-aa3d-6bf6bc55f01a}</Project>
-      <Name>Mmosoft.Facebook.Utils</Name>
-    </ProjectReference>
+    <Compile Include="Utilities\ConsoleLogger.cs" />
+    <Compile Include="Utilities\FileLog.cs" />
+    <Compile Include="Utilities\HttpRequestHandler.cs" />
+    <Compile Include="Utilities\ILogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Localization.txt">

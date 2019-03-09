@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mmosoft.Facebook.Sdk;
 
 namespace Mmosoft.Facebook.Sdk.Examples
 {
@@ -11,14 +6,11 @@ namespace Mmosoft.Facebook.Sdk.Examples
     {
         static void Main(string[] args)
         {
-            // Define fb client
-            var fb = new FacebookClient(user: "", password: "");
-            // And invoke method
-            //fb.PostToWall("Send from Facebook SDK");
-            //fb.PostToGroup("Send from Facebook SDK-Group", "529073513939720");        
-            var g = fb.GetJoinedGroups();
-
-            var someone = fb.GetUserInfo("beciuu94", new Models.User.UserInfoOption
+            // user end-point
+            var user = new UserEndpoint(username: "", password: "");
+            user.Post("Send from Facebook SDK"); // post to logged users wall
+            // Missing some stuff as like, comment, block another user, etc
+            user.GetUserInfo("beciuu94", new Models.User.UserInfoOption // gather another user information
             {
                 FbInfoOption = new Models.User.FacebookInfoOption
                 {
@@ -35,6 +27,28 @@ namespace Mmosoft.Facebook.Sdk.Examples
                 IncludeRelationshipInfo = false,
                 IncludeWorkInfo = false
             });
+
+            // Page end-point
+            var page = new PageEndpoint(username: "", password: "");            
+            page.GetPageId(pageAlias: "FHNChallengingTheImpossible"); // get id from page alias
+            page.GetPageAlbums(pageAlias: "FHNChallengingTheImpossible"); // get album list of a page using page alias
+            page.GetPageReviewInfo(pageIdOrAlias: "FHNChallengingTheImpossible"); // get review of pages
+            page.LikePage(pageIdOrAlias: "FHNChallengingTheImpossible"); // like a page            
+            page.GetPageAlbumImages(pageAlias: "FHNChallengingTheImpossible", albumId: "568853546917720");
+
+            // messy stuff
+            // I'm not sure we can use this method for user or group posts. Not tested yet.
+            page.CommentToPageAlbumImage("https://m.facebook.com/photo.php?fbid=569190373550704&id=533880033748405", "Hi");
+            page.LikePhoto(targetId: "target id is photo picture in a page."); // hmm
+            
+            // Group end-point
+            var group = new GroupEndpoint(username: "", password: "");
+            group.GetJoinedGroups();            
+            group.Post(message: "hello I'm new", groupId: "1234567");
+            group.JoinGroup(groupId: "1234567");
+            group.CancelJoinGroup(groupId: "1234567"); // incase your join group is pending for processing
+            group.LeaveGroup(groupId: "1234567", preventReAdd: true);
+            group.GetGroupInfo(groupId: "1234567"); // get group information, member list, admin, etc...
 
             Console.WriteLine();
         }

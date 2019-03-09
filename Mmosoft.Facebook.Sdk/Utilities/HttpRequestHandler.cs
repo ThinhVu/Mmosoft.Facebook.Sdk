@@ -3,11 +3,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
-using System.Threading;
 
 namespace Mmosoft.Facebook.Utils
 {
-    public class HttpHandler
+    public class HttpRequestHandler
     {
         /// <summary>
         /// Contain cookie for making authorized request 
@@ -18,25 +17,13 @@ namespace Mmosoft.Facebook.Utils
         /// User-agent
         /// </summary>
         public virtual string UserAgent { get; set; }
-
-        /// <summary>
-        /// Allow request delay request
-        /// </summary>
-        public bool DelayRequest { get; set; }
-        public int DelaySeconds { get; set; }
-
-        /// <summary>
-        /// Store last request time
-        /// </summary>
-        private DateTime _lastRequest { get; set; }
-
+        
         /// <summary>
         /// Initialize new instance of BaseHttp request with default user agent
         /// </summary>
-        public HttpHandler()
+        public HttpRequestHandler()
             : this("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0")
         {
-            DelaySeconds = 5;
             CookieContainer = new CookieContainer();
         }
 
@@ -44,7 +31,7 @@ namespace Mmosoft.Facebook.Utils
         /// Initialize new instance of BaseHttp request.
         /// </summary>
         /// <param name="userAgent">User agent</param>
-        public HttpHandler(string userAgent)
+        public HttpRequestHandler(string userAgent)
         {
             UserAgent = userAgent;
         }
@@ -82,12 +69,10 @@ namespace Mmosoft.Facebook.Utils
         /// <returns>A System.Net.HttpWebResponse for the specified uri scheme</returns>
         public virtual HttpWebResponse SendGETRequest(string requestUrl)
         {
-            this.waitForNextRequest();
             var uri = new Uri(requestUrl);
             var request = this.CreateGETRequest(uri);
             var response = request.GetResponse() as HttpWebResponse;
             this.storeCookie(response.Cookies);
-            this._lastRequest = DateTime.Now;
             return response;
         }
 
@@ -100,18 +85,12 @@ namespace Mmosoft.Facebook.Utils
         /// <returns>A System.Net.HttpWebResponse for the specified uri scheme</returns>
         public virtual HttpWebResponse SendPOSTRequest(string requestUrl, string content)
         {
-            this.waitForNextRequest();
             byte[] buffer = Encoding.UTF8.GetBytes(content);
             var postRequest = this.CreatePOSTRequest(new Uri(requestUrl), buffer);
             using (var postRequestStream = postRequest.GetRequestStream())
                 postRequestStream.Write(buffer, 0, buffer.Length);
             var response = postRequest.GetResponse() as HttpWebResponse;
-
-            // Store cookie
             this.storeCookie(response.Cookies);
-            // set last request
-            this._lastRequest = DateTime.Now;
-
             return response;          
         }
 
@@ -152,11 +131,7 @@ namespace Mmosoft.Facebook.Utils
         private HttpWebResponse redirectRequestProcess(string location)
         {
             // Redirect and disable delay request to send request immediate
-            var dl = DelayRequest;
-            DelayRequest = false;
-            var response = SendGETRequest(location);
-            DelayRequest = dl;
-            return response;
+            return SendGETRequest(location);
         }
 
         /// <summary>
@@ -191,17 +166,5 @@ namespace Mmosoft.Facebook.Utils
             if (cookies != null && cookies.Count > 0)
                 this.CookieContainer.Add(cookies);
         }
-
-        /// <summary>
-        /// Delay request
-        /// </summary>
-        private void waitForNextRequest()
-        {
-            while (DelayRequest && this._lastRequest.AddSeconds(this.DelaySeconds) > DateTime.Now)
-            {
-                Thread.Sleep(1000);
-            }
-        }
     }
-
 }
