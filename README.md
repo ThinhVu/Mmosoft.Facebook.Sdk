@@ -12,7 +12,11 @@ Current support :
 - Get user info from user id or user alias ( info will be collect at the moment is Id, Name, Avatar, ListFriends of this user)
 - Get page id from page alias.
 
+# License
+WTFPL (http://www.wtfpl.net/)
+
 # Example
 For example, see Mmosoft.Facebook.Sdk.Examples/Program.cs.
 
 This just contain some simple methods. Let's explore it.
+
