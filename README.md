@@ -20,3 +20,6 @@ For example, see Mmosoft.Facebook.Sdk.Examples/Program.cs.
 
 This just contain some simple methods. Let's explore it.
 
+# Donate
+<img align="left" width="16" height="16" src="https://github.com/ThinhVu/bmac/blob/master/assets/icon/coffee.png?raw=true" alt="[ ]">
+<a style="margin-left: 5px" href="https://www.paypal.com/paypalme/vutro">Buy me a coffee</a>
