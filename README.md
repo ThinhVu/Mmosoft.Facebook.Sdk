@@ -1,3 +1,6 @@
+# Disclaim
+The project is not under maintained. Be aware to using it in production.
+
 # Mmosoft.Facebook.Sdk
 This api using your user email and password to like page or join group rather than using graph api.
 
